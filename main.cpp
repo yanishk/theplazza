@@ -32,11 +32,6 @@ int main(int ac, const char **av)
         return 84;
     if (args.retrieveArgs(av) == 84)
         return 84;
-    try {
-        reception.placeOrders();
-    } catch (const plazza::Waiter::ParsingCommandFailed &err) {
-        std::cerr << err.what() << std::endl;
-        return 84;
-    }
+    reception.placeOrders();
     return 0;
 }

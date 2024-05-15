@@ -160,7 +160,11 @@ void plazza::Waiter::placeOrders()
     while (std::getline(std::cin, line)) {
         if (line == "exit")
             break;
-        parseMultipleCommands(line);
+        try {
+            parseMultipleCommands(line);
+        } catch (const plazza::Waiter::ParsingCommandFailed &err) {
+            std::cerr << err.what() << std::endl;
+        }
         resetCommandList();
     }
 }
