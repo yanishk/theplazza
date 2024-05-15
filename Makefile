@@ -14,7 +14,7 @@ OBJ		=	$(SRC:.cpp=.o)
 
 NAME	=	plazza
 
-CPPFLAGS	=	-std=c++20
+CPPFLAGS	=	-std=c++20 -iquote ./src
 
 all:	$(NAME)
 
