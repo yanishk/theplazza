@@ -7,7 +7,8 @@
 
 CC		=	g++
 
-SRC		=	main.cpp
+SRC		=	main.cpp			\
+			src/ThreadPool.cpp
 
 OBJ		=	$(SRC:.cpp=.o)
 
