@@ -26,12 +26,12 @@ int getHelp(int ac, const char **av)
 int main(int ac, const char **av)
 {
     plazza::Arguments args;
-    plazza::Waiter reception;
+    plazza::Waiter waiter;
 
     if (getHelp(ac, av) == 84)
         return 84;
     if (args.retrieveArgs(av) == 84)
         return 84;
-    reception.placeOrders();
+    waiter.placeOrders();
     return 0;
 }
