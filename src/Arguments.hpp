@@ -8,11 +8,13 @@
 #ifndef ARGUMENTS_HPP_
 #define ARGUMENTS_HPP_
 
-namespace plazza {
-    class Arguments {
+namespace plazza
+{
+    class Arguments
+    {
         public:
-            Arguments();
-            ~Arguments();
+            Arguments() = default;
+            ~Arguments() = default;
 
             int retrieveArgs(const char **av);
             int checkArgValidity() const;

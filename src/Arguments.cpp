@@ -9,14 +9,6 @@
 #include <string>
 #include <iostream>
 
-plazza::Arguments::Arguments()
-{
-}
-
-plazza::Arguments::~Arguments()
-{
-}
-
 int plazza::Arguments::checkArgValidity() const
 {
     if (_multiplier <= 0 || _nbrCooks <= 0 || _milliseconds <= 0) {

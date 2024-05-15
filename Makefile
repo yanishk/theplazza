@@ -5,21 +5,23 @@
 ## compiles program
 ##
 
-CC		=	g++
+CXX		=	g++
 
 SRC		=	main.cpp			\
-			src/ThreadPool.cpp
+			src/ThreadPool.cpp	\
+			src/Waiter.cpp		\
+			src/Arguments.cpp 	\
 
 OBJ		=	$(SRC:.cpp=.o)
 
 NAME	=	plazza
 
-CPPFLAGS	=	-std=c++20 -iquote ./src
+CPPFLAGS	=	-std=c++20 -iquote ./src -iquote ./include
 
 all:	$(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) -o $(NAME) $(OBJ)
+	$(CXX) -o $(NAME) $(OBJ)
 
 clean:
 	$(RM) $(OBJ)

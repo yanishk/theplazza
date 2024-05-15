@@ -1,6 +1,14 @@
+/*
+** EPITECH PROJECT, 2024
+** plazza
+** File description:
+** main
+*/
+
 #include <iostream>
 #include <string>
-#include "Arguments.cpp"
+#include "Arguments.hpp"
+#include "Waiter.hpp"
 
 int getHelp(int ac, const char **av)
 {
@@ -15,17 +23,20 @@ int getHelp(int ac, const char **av)
     return 0;
 }
 
-int main(int ac, const char **av) {
+int main(int ac, const char **av)
+{
     plazza::Arguments args;
+    plazza::Waiter reception;
 
     if (getHelp(ac, av) == 84)
         return 84;
     if (args.retrieveArgs(av) == 84)
         return 84;
-    std::string line;
-    while (std::getline(std::cin, line)) {
-        if (line == "exit")
-            break;
+    try {
+        reception.placeOrders();
+    } catch (const plazza::Waiter::ParsingCommandFailed &err) {
+        std::cerr << err.what() << std::endl;
+        return 84;
     }
     return 0;
 }
