@@ -6,7 +6,9 @@
 */
 
 #include "Waiter.hpp"
+#include <thread>
 #include <algorithm>
+#include "Process.hpp"
 
 plazza::Waiter::Waiter()
 {
@@ -153,18 +155,26 @@ void plazza::Waiter::parseMultipleCommands(std::string &line)
     printCommands();
 }
 
-void plazza::Waiter::placeOrders()
+void plazza::Waiter::placeOrders(plazza::Stock stock, int nbrCooks)
 {
     std::string line;
+    plazza::Process process;
+    pid_t pid = process.forkFunc();
 
-    while (std::getline(std::cin, line)) {
-        if (line == "exit")
-            break;
-        try {
-            parseMultipleCommands(line);
-        } catch (const plazza::Waiter::ParsingCommandFailed &err) {
-            std::cerr << err.what() << std::endl;
+    if (pid == 0) {
+        plazza::ThreadPool pool(nbrCooks);
+        std::thread stockThread(stock.refillStock, stock, pool.getDone());
+        stockThread.join();
+    } else {
+        while (std::getline(std::cin, line)) {
+            if (line == "exit")
+                break;
+            try {
+                parseMultipleCommands(line);
+            } catch (const plazza::Waiter::ParsingCommandFailed &err) {
+                std::cerr << err.what() << std::endl;
+            }
+            resetCommandList();
         }
-        resetCommandList();
     }
 }

@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string>
 #include "Arguments.hpp"
+#include "ThreadPool.hpp"
+#include "Stock.hpp"
 #include "Waiter.hpp"
 
 int getHelp(int ac, const char **av)
@@ -26,12 +28,13 @@ int getHelp(int ac, const char **av)
 int main(int ac, const char **av)
 {
     plazza::Arguments args;
+    plazza::Stock stock;
     plazza::Waiter waiter;
 
     if (getHelp(ac, av) == 84)
         return 84;
     if (args.retrieveArgs(av) == 84)
         return 84;
-    waiter.placeOrders();
+    waiter.placeOrders(stock, args.getNbrCooks());
     return 0;
 }

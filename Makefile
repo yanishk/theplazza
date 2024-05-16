@@ -11,6 +11,8 @@ SRC		=	main.cpp			\
 			src/ThreadPool.cpp	\
 			src/Waiter.cpp		\
 			src/Arguments.cpp 	\
+			src/Stock.cpp		\
+			src/Process.cpp
 
 OBJ		=	$(SRC:.cpp=.o)
 

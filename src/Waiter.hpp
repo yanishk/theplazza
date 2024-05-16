@@ -11,6 +11,8 @@
     #include <vector>
     #include <iostream>
     #include "Error.hpp"
+    #include "Stock.hpp"
+    #include "ThreadPool.hpp"
 
 namespace plazza
 {
@@ -26,7 +28,7 @@ namespace plazza
 
             Waiter();
             ~Waiter() = default;
-            void placeOrders();
+            void placeOrders(plazza::Stock stock, int nbrCooks);
 
         private:
             void parseMultipleCommands(std::string &line);
