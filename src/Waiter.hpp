@@ -13,6 +13,7 @@
     #include "Error.hpp"
     #include "Stock.hpp"
     #include "ThreadPool.hpp"
+    #include "Arguments.hpp"
 
 namespace plazza
 {
@@ -28,7 +29,7 @@ namespace plazza
 
             Waiter();
             ~Waiter() = default;
-            void placeOrders(plazza::Stock stock, int nbrCooks);
+            void placeOrders(plazza::Stock stock, plazza::Arguments args);
 
         private:
             void parseMultipleCommands(std::string &line);

@@ -5,10 +5,12 @@
 ** Waiter
 */
 
-#include "Waiter.hpp"
 #include <thread>
 #include <algorithm>
+
+#include "Waiter.hpp"
 #include "Process.hpp"
+#include "Arguments.hpp"
 
 plazza::Waiter::Waiter()
 {
@@ -155,15 +157,15 @@ void plazza::Waiter::parseMultipleCommands(std::string &line)
     printCommands();
 }
 
-void plazza::Waiter::placeOrders(plazza::Stock stock, int nbrCooks)
+void plazza::Waiter::placeOrders(plazza::Stock stock, plazza::Arguments args)
 {
     std::string line;
     plazza::Process process;
     pid_t pid = process.forkFunc();
 
+    plazza::ThreadPool pool(args.getNbrCooks());
     if (pid == 0) {
-        plazza::ThreadPool pool(nbrCooks);
-        std::thread stockThread(stock.refillStock, stock, pool.getDone());
+        std::thread stockThread(stock.refillStock, stock, args.getMilliseconds());
         stockThread.join();
     } else {
         while (std::getline(std::cin, line)) {
@@ -174,6 +176,8 @@ void plazza::Waiter::placeOrders(plazza::Stock stock, int nbrCooks)
             } catch (const plazza::Waiter::ParsingCommandFailed &err) {
                 std::cerr << err.what() << std::endl;
             }
+            if (line == "Margarita")
+                pool.putInQueue([] { std::cout << "Margarita" << std::endl; });
             resetCommandList();
         }
     }

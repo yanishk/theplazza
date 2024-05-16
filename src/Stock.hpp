@@ -19,7 +19,8 @@ namespace plazza {
             Stock();
             ~Stock();
 
-            static void refillStock(plazza::Stock stock, bool isDone);
+            static void refillStock(plazza::Stock stock, int time);
+            void takeFromStock(std::string);
 
         protected:
             std::map<std::string, std::size_t> _stockIngredients;

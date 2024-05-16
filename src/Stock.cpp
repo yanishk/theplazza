@@ -24,15 +24,21 @@ plazza::Stock::~Stock()
 {
 }
 
-void plazza::Stock::refillStock(plazza::Stock stock, bool isDone)
+void plazza::Stock::refillStock(plazza::Stock stock, int time)
 {
     while (1) {
-        if (isDone)
-            exit(0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(time));
         for (auto it = stock._stockIngredients.begin(); it != stock._stockIngredients.end(); it++) {
             if (it->second < 5)
                 it->second++;
         }
+    }
+}
+
+void plazza::Stock::takeFromStock(std::string ingredient)
+{
+    auto it = _stockIngredients.find(ingredient);
+    if (it != _stockIngredients.end()) {
+        it->second -= 1;
     }
 }

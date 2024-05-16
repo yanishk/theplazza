@@ -35,6 +35,6 @@ int main(int ac, const char **av)
         return 84;
     if (args.retrieveArgs(av) == 84)
         return 84;
-    waiter.placeOrders(stock, args.getNbrCooks());
+    waiter.placeOrders(stock, args);
     return 0;
 }
