@@ -16,7 +16,7 @@ namespace plazza {
         public:
             virtual ~IPizza() = default;
 
-            virtual void cookPizza(float multiplier, plazza::Stock *stock) = 0;
+            virtual void cookPizza(float multiplier, plazza::Stock &stock) = 0;
 
         protected:
         private:

@@ -11,6 +11,7 @@
 #include <thread>
 #include <chrono>
 #include <vector>
+#include <memory>
 #include "IPizza.hpp"
 
 namespace plazza {
@@ -19,7 +20,7 @@ namespace plazza {
             Margarita();
             ~Margarita();
 
-            void cookPizza(float multiplier, plazza::Stock *stock) override;
+            void cookPizza(float multiplier, plazza::Stock &stock) override;
 
         protected:
         private:

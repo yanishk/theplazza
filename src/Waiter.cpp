@@ -11,6 +11,7 @@
 #include "Waiter.hpp"
 #include "Process.hpp"
 #include "Arguments.hpp"
+#include "Kitchen.hpp"
 
 plazza::Waiter::Waiter()
 {
@@ -154,31 +155,35 @@ void plazza::Waiter::parseMultipleCommands(std::string &line)
     changeCommandsCase();
     checkCommands();
     fillCommands();
-    printCommands();
 }
 
-void plazza::Waiter::placeOrders(plazza::Stock stock, plazza::Arguments args)
+std::vector<std::pair<std::string, std::size_t>> plazza::Waiter::getCommands()
+{
+    return _commandsVector;
+}
+
+void plazza::Waiter::placeOrders(plazza::Arguments args)
 {
     std::string line;
-    plazza::Process process;
-    pid_t pid = process.forkFunc();
+    plazza::Kitchen kitchen(args.getNbrCooks(), args.getMilliseconds(), args.getMultiplier());
 
-    plazza::ThreadPool pool(args.getNbrCooks());
-    if (pid == 0) {
-        std::thread stockThread(stock.refillStock, stock, args.getMilliseconds());
-        stockThread.join();
-    } else {
-        while (std::getline(std::cin, line)) {
-            if (line == "exit")
-                break;
-            try {
-                parseMultipleCommands(line);
-            } catch (const plazza::Waiter::ParsingCommandFailed &err) {
-                std::cerr << err.what() << std::endl;
-            }
-            if (line == "Margarita")
-                pool.putInQueue([] { std::cout << "Margarita" << std::endl; });
-            resetCommandList();
+    while (std::getline(std::cin, line)) {
+        if (line == "exit")
+            break;
+        try {
+            parseMultipleCommands(line);
+        } catch (const plazza::Waiter::ParsingCommandFailed &err) {
+            std::cerr << err.what() << std::endl;
         }
+        try {
+            for (auto &command : _commandsVector) {
+                for (std::size_t nbPizza = command.second; nbPizza != 0; nbPizza--) {
+                    kitchen.makePizza(command.first);
+                }
+            }
+        } catch (const plazza::Kitchen::PizzaUnrecognized &err) {
+            std::cerr << err.what() << std::endl;
+        }
+        resetCommandList();
     }
 }

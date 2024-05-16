@@ -1,0 +1,42 @@
+/*
+** EPITECH PROJECT, 2024
+** plazza
+** File description:
+** Kitchen
+*/
+
+#ifndef KITCHEN_HPP_
+#define KITCHEN_HPP_
+
+#include <unordered_map>
+#include <functional>
+#include <string>
+#include <memory>
+#include "ThreadPool.hpp"
+#include "Stock.hpp"
+#include "IPizza.hpp"
+#include "Error.hpp"
+
+namespace plazza
+{
+    class Kitchen
+    {
+        public:
+        class PizzaUnrecognized : public plazza::Error
+        {
+            public:
+                PizzaUnrecognized():
+                plazza::Error("Kitchen: Chosen pizza size doesn't exist") {}
+        };
+
+            Kitchen(int nbrCooks, int milliseconds, float multiplier);
+            void makePizza(std::string &pizzaName);
+        private:
+            float _multiplier;
+            plazza::ThreadPool _threadPool;
+            plazza::Stock _stock;
+            std::unordered_map<std::string, std::shared_ptr<plazza::IPizza>> _availablePizzas;
+    };
+}
+
+#endif

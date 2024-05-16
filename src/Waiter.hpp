@@ -29,7 +29,8 @@ namespace plazza
 
             Waiter();
             ~Waiter() = default;
-            void placeOrders(plazza::Stock stock, plazza::Arguments args);
+            void placeOrders(plazza::Arguments args);
+            std::vector<std::pair<std::string, std::size_t>> getCommands();
 
         private:
             void parseMultipleCommands(std::string &line);

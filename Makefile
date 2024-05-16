@@ -13,13 +13,14 @@ SRC		=	main.cpp				\
 			src/Arguments.cpp 		\
 			src/Stock.cpp			\
 			src/Process.cpp			\
-			src/Pizza/Margarita.cpp
+			src/Kitchen.cpp 		\
+			src/Pizza/Margarita.cpp	\
 
 OBJ		=	$(SRC:.cpp=.o)
 
 NAME	=	plazza
 
-CPPFLAGS	=	-std=c++20 -iquote ./src -iquote ./include
+CPPFLAGS	=	-std=c++20 -iquote ./src -iquote ./src/Pizza -iquote ./include
 
 all:	$(NAME)
 

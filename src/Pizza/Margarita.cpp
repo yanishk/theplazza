@@ -6,6 +6,7 @@
 */
 
 #include <iostream>
+#include <memory>
 #include "Margarita.hpp"
 #include "Stock.hpp"
 
@@ -20,11 +21,12 @@ plazza::Margarita::Margarita::~Margarita()
 {
 }
 
-void plazza::Margarita::cookPizza(float multiplier, plazza::Stock *stock) {
+void plazza::Margarita::cookPizza(float multiplier, plazza::Stock &stock)
+{
     for (auto &it: _MargIngredients) {
-        stock->takeFromStock(it);
+        stock.takeFromStock(it);
     }
-    int timeCooking = (int)1000 * multiplier;
+    int timeCooking = static_cast<float>(1000 * multiplier);
     std::this_thread::sleep_for(std::chrono::milliseconds(timeCooking));
     std::cout << "One Margarita comin' right up" << std::endl;
-};
+}
