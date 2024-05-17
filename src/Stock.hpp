@@ -12,11 +12,12 @@
 #include <map>
 #include <chrono>
 #include <thread>
+#include <vector>
 
 namespace plazza {
     class Stock {
         public:
-            Stock();
+            Stock(std::vector<std::string> ingredientsList);
             ~Stock();
 
             static void refillStock(plazza::Stock stock, int time);

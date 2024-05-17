@@ -14,7 +14,7 @@
 #include <memory>
 #include "ThreadPool.hpp"
 #include "Stock.hpp"
-#include "IPizza.hpp"
+#include "PlazzaMenu.hpp"
 #include "Error.hpp"
 
 namespace plazza
@@ -29,13 +29,13 @@ namespace plazza
                 plazza::Error("Kitchen: Chosen pizza size doesn't exist") {}
         };
 
-            Kitchen(int nbrCooks, int milliseconds, float multiplier);
+            Kitchen(int nbrCooks, int milliseconds, float multiplier, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenu, std::vector<std::string> ingredientsList);
             void makePizza(std::string &pizzaName);
         private:
             float _multiplier;
             plazza::ThreadPool _threadPool;
             plazza::Stock _stock;
-            std::unordered_map<std::string, std::shared_ptr<plazza::IPizza>> _availablePizzas;
+            std::unordered_map<std::string, std::shared_ptr<plazza::Pizza>> _availablePizzas;
     };
 }
 

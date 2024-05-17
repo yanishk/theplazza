@@ -27,12 +27,17 @@ int getHelp(int ac, const char **av)
 int main(int ac, const char **av)
 {
     plazza::Arguments args;
-    plazza::Waiter waiter;
 
     if (getHelp(ac, av) == 84)
         return 84;
     if (args.retrieveArgs(av) == 84)
         return 84;
-    waiter.placeOrders(args);
+    try {
+        plazza::Waiter waiter;
+        waiter.placeOrders(args);
+    } catch(const plazza::PlazzaMenu::ParsingPlazzaMenuFailed &err) {
+        std::cerr << err.what() << std::endl;
+        return 84;
+    }
     return 0;
 }

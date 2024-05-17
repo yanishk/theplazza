@@ -14,7 +14,8 @@ SRC		=	main.cpp				\
 			src/Stock.cpp			\
 			src/Process.cpp			\
 			src/Kitchen.cpp 		\
-			src/Pizza/Margarita.cpp	\
+			src/PlazzaMenu.cpp 		\
+			src/Pizza/Pizza.cpp 	\
 
 OBJ		=	$(SRC:.cpp=.o)
 

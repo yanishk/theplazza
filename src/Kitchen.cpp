@@ -7,10 +7,9 @@
 
 #include "Kitchen.hpp"
 #include "Process.hpp"
-#include "Margarita.hpp"
 #include <iostream>
 
-plazza::Kitchen::Kitchen(int nbrCooks, int milliseconds, float multiplier) : _threadPool(nbrCooks), _multiplier(multiplier)
+plazza::Kitchen::Kitchen(int nbrCooks, int milliseconds, float multiplier, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenu, std::vector<std::string> ingredientsList) : _threadPool(nbrCooks), _stock(ingredientsList), _multiplier(multiplier)
 {
     plazza::Process process;
     pid_t pid = process.forkFunc();
@@ -19,7 +18,9 @@ plazza::Kitchen::Kitchen(int nbrCooks, int milliseconds, float multiplier) : _th
         std::thread stockThread(_stock.refillStock, _stock, milliseconds);
         stockThread.join();
     }
-    _availablePizzas["MARGARITA"] = std::make_shared<plazza::Margarita>();
+
+    for (auto &pizza : plazzaMenu)
+        _availablePizzas[pizza->getPizzaName()] = pizza;
 }
 
 void plazza::Kitchen::makePizza(std::string &pizzaName)
@@ -28,7 +29,7 @@ void plazza::Kitchen::makePizza(std::string &pizzaName)
 
     if (it == _availablePizzas.end())
         throw Kitchen::PizzaUnrecognized();
-    std::shared_ptr<plazza::IPizza> pizza = it->second;
+    std::shared_ptr<plazza::Pizza> pizza = it->second;
     _threadPool.putInQueue([this, pizza] {
         pizza->cookPizza(_multiplier, _stock);
     });

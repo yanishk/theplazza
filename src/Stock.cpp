@@ -7,17 +7,10 @@
 
 #include "Stock.hpp"
 
-plazza::Stock::Stock()
+plazza::Stock::Stock(std::vector<std::string> ingredientsList)
 {
-    _stockIngredients["dough"] = 5;
-    _stockIngredients["tomato"] = 5;
-    _stockIngredients["gruyere"] = 5;
-    _stockIngredients["ham"] = 5;
-    _stockIngredients["mushroom"] = 5;
-    _stockIngredients["steak"] = 5;
-    _stockIngredients["eggPlant"] = 5;
-    _stockIngredients["goatCheese"] = 5;
-    _stockIngredients["chiefLove"] = 5;
+    for (auto &ingredient : ingredientsList)
+        _stockIngredients[ingredient] = 5;
 }
 
 plazza::Stock::~Stock()

@@ -14,6 +14,7 @@
     #include "Stock.hpp"
     #include "ThreadPool.hpp"
     #include "Arguments.hpp"
+    #include "PlazzaMenu.hpp"
 
 namespace plazza
 {
@@ -44,7 +45,9 @@ namespace plazza
             void printTmpCommands();
             void printCommands();
             void resetCommandList();
-            void lowerToUpperCase(std::string &word);
+            void upperToLowerCase(std::string &word);
+            plazza::PlazzaMenu _menu;
+            std::vector<std::string> _plazzaIngredientsList;
             std::vector<std::string> _pizzaTypeVector;
             std::vector<std::string> _pizzaSizeVector;
             std::vector<std::vector<std::string>> _tmpCommandsVector;

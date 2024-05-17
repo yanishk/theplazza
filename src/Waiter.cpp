@@ -15,15 +15,10 @@
 
 plazza::Waiter::Waiter()
 {
-    _pizzaTypeVector.push_back("REGINA");
-    _pizzaTypeVector.push_back("MARGARITA");
-    _pizzaTypeVector.push_back("AMERICANA");
-    _pizzaTypeVector.push_back("FANTASIA");
-    _pizzaSizeVector.push_back("S");
-    _pizzaSizeVector.push_back("M");
-    _pizzaSizeVector.push_back("L");
-    _pizzaSizeVector.push_back("XL");
-    _pizzaSizeVector.push_back("XXL");
+    for (auto &pizza : _menu.getMenu())
+        _pizzaTypeVector.push_back(pizza->getPizzaName());
+    for (auto &pizzaSize : _menu.getPizzaSizes())
+        _pizzaSizeVector.push_back(pizzaSize);
 }
 
 void plazza::Waiter::resetCommandList()
@@ -97,24 +92,24 @@ void plazza::Waiter::printCommands()
     }
 }
 
-void plazza::Waiter::lowerToUpperCase(std::string &word)
+void plazza::Waiter::upperToLowerCase(std::string &word)
 {
     for (std::size_t i = 0; i != word.length(); i++)
-        word[i] = std::toupper(word[i]);
+        word[i] = std::tolower(word[i]);
 }
 
 void plazza::Waiter::changeCommandsCase()
 {
     for (auto &command : _tmpCommandsVector) {
         for (auto &word : command) {
-            lowerToUpperCase(word);
+            upperToLowerCase(word);
         }
     }
 }
 
 bool isPizzaNumber(std::string &line)
 {
-    std::size_t pos = line.find_first_of('X');
+    std::size_t pos = line.find_first_of('x');
 
     if (pos != 0)
         return false;
@@ -165,11 +160,14 @@ std::vector<std::pair<std::string, std::size_t>> plazza::Waiter::getCommands()
 void plazza::Waiter::placeOrders(plazza::Arguments args)
 {
     std::string line;
-    plazza::Kitchen kitchen(args.getNbrCooks(), args.getMilliseconds(), args.getMultiplier());
+    plazza::Kitchen kitchen(args.getNbrCooks(), args.getMilliseconds(),
+        args.getMultiplier(), _menu.getMenu(),_menu.getIngredients());
 
     while (std::getline(std::cin, line)) {
         if (line == "exit")
             break;
+        if (line.length() == 0)
+            continue;
         try {
             parseMultipleCommands(line);
         } catch (const plazza::Waiter::ParsingCommandFailed &err) {
