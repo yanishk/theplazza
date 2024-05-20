@@ -10,6 +10,7 @@
 
 #include "IPizza.hpp"
 #include <vector>
+#include <memory>
 
 namespace plazza
 {
@@ -23,10 +24,10 @@ namespace plazza
             virtual std::size_t getCookingTime() override;
             virtual std::size_t getIngredientNumber() override;
             virtual void pushIngredient(std::string &ingredientName) override;
-            virtual void cookPizza(float multiplier, plazza::Stock &stock) override;
-            std::vector<std::string> _margIngredients;
+            virtual void cookPizza(float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond) override;
 
         private:
+            std::vector<std::string> _margIngredients;
             std::string _pizzaName;
             std::size_t _cookingTime;
     };

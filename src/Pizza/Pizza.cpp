@@ -6,6 +6,7 @@
 */
 
 #include "Pizza.hpp"
+#include <memory>
 
 void plazza::Pizza::setPizzaName(std::string &pizzaName)
 {
@@ -37,10 +38,10 @@ void plazza::Pizza::pushIngredient(std::string &ingredientName)
     _margIngredients.push_back(ingredientName);
 }
 
-void plazza::Pizza::cookPizza(float multiplier, plazza::Stock &stock)
+void plazza::Pizza::cookPizza(float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond)
 {
     for (auto &it: _margIngredients) {
-        stock.takeFromStock(it);
+        stock->takeFromStock(it, millisecond);
     }
     int timeCooking = static_cast<float>((_cookingTime * 1000) * multiplier);
     std::this_thread::sleep_for(std::chrono::milliseconds(timeCooking));

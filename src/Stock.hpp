@@ -13,6 +13,7 @@
 #include <chrono>
 #include <thread>
 #include <vector>
+#include <memory>
 
 namespace plazza {
     class Stock {
@@ -20,12 +21,13 @@ namespace plazza {
             Stock(std::vector<std::string> ingredientsList);
             ~Stock();
 
-            static void refillStock(plazza::Stock stock, int time);
-            void takeFromStock(std::string);
+            static void refillStock(std::shared_ptr<plazza::Stock> stock, int time);
+            void takeFromStock(std::string, int millisecond);
+            std::map<std::string, std::size_t> getStock();
 
         protected:
-            std::map<std::string, std::size_t> _stockIngredients;
         private:
+            std::map<std::string, std::size_t> _stockIngredients;
     };
 }
 #endif /* !STOCK_HPP_ */

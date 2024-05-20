@@ -30,12 +30,17 @@ namespace plazza
         };
 
             Kitchen(int nbrCooks, int milliseconds, float multiplier, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenu, std::vector<std::string> ingredientsList);
+            ~Kitchen();
             void makePizza(std::string &pizzaName);
+            std::shared_ptr<plazza::Stock> getStockObject();
+
         private:
             float _multiplier;
             plazza::ThreadPool _threadPool;
-            plazza::Stock _stock;
+            std::shared_ptr<plazza::Stock> _stock;
             std::unordered_map<std::string, std::shared_ptr<plazza::Pizza>> _availablePizzas;
+            std::thread _stockThread;
+            int _millisecond;
     };
 }
 

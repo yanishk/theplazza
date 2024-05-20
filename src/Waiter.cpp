@@ -168,6 +168,12 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
             break;
         if (line.length() == 0)
             continue;
+        if (line == "status") {
+            std::map<std::string, std::size_t> map = kitchen.getStockObject()->getStock();
+            for (auto it = map.begin(); it != map.end(); it++)
+                std::cout << it->first << ": " << it->second << std::endl;
+            continue;
+        }
         try {
             parseMultipleCommands(line);
         } catch (const plazza::Waiter::ParsingCommandFailed &err) {
