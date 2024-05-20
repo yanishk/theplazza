@@ -14,9 +14,12 @@
 #include <thread>
 #include <vector>
 #include <memory>
+#include <condition_variable>
 
-namespace plazza {
-    class Stock {
+namespace plazza
+{
+    class Stock
+    {
         public:
             Stock(std::vector<std::string> ingredientsList);
             ~Stock();
@@ -28,6 +31,8 @@ namespace plazza {
         protected:
         private:
             std::map<std::string, std::size_t> _stockIngredients;
+            static inline std::condition_variable _stockCondVar;
+            std::mutex _stockMutex;
     };
 }
 #endif /* !STOCK_HPP_ */
