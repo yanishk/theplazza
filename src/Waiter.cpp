@@ -54,7 +54,7 @@ void plazza::Waiter::parseWord(std::string &line, std::vector<std::string> &comm
     std::size_t pos = line.find_first_of(" \n\t");
 
     if (pos == std::string::npos && wordIndex != _commandArguments - 1)
-        throw Waiter::ParsingCommandFailed("Invalid number of arguments");
+        throw Waiter::ParsingCommandFailed("Invalid command");
     word = line.substr(0, pos);
     line.erase(0, pos);
     commandInfos.push_back(word);
@@ -87,8 +87,9 @@ void plazza::Waiter::printTmpCommands()
 void plazza::Waiter::printCommands()
 {
     for (auto &command : _commandsVector) {
-        std::cout << command.first << std::endl;
-        std::cout << command.second << std::endl;
+        std::cout << std::get<0>(command) << std::endl;
+        std::cout << std::get<1>(command)<< std::endl;
+        std::cout << std::get<2>(command)<< std::endl;
     }
 }
 
@@ -96,6 +97,12 @@ void plazza::Waiter::upperToLowerCase(std::string &word)
 {
     for (std::size_t i = 0; i != word.length(); i++)
         word[i] = std::tolower(word[i]);
+}
+
+void plazza::Waiter::lowertoUpperCase(std::string &word)
+{
+    for (std::size_t i = 0; i != word.length(); i++)
+        word[i] = std::toupper(word[i]);
 }
 
 void plazza::Waiter::changeCommandsCase()
@@ -132,8 +139,11 @@ void plazza::Waiter::checkCommands()
 
 void plazza::Waiter::fillCommands()
 {
-    for (auto &command : _tmpCommandsVector)
-        _commandsVector.push_back(std::make_pair(command.at(0), std::atoi(command.at(2).substr(1, command.at(2).length()).c_str())));
+
+    for (auto &command : _tmpCommandsVector) {
+        lowertoUpperCase(command.at(1));
+        _commandsVector.push_back(std::make_tuple(command.at(0), command.at(1), std::atoi(command.at(2).substr(1, command.at(2).length()).c_str())));
+    }
 }
 
 void plazza::Waiter::parseMultipleCommands(std::string &line)
@@ -152,7 +162,7 @@ void plazza::Waiter::parseMultipleCommands(std::string &line)
     fillCommands();
 }
 
-std::vector<std::pair<std::string, std::size_t>> plazza::Waiter::getCommands()
+std::vector<std::tuple<std::string, std::string, std::size_t>> plazza::Waiter::getCommands()
 {
     return _commandsVector;
 }
@@ -164,8 +174,6 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
         args.getMultiplier(), _menu.getMenu(),_menu.getIngredients());
 
     while (std::getline(std::cin, line)) {
-        if (line == "exit")
-            break;
         if (line.length() == 0)
             continue;
         if (line == "status") {
@@ -181,8 +189,8 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
         }
         try {
             for (auto &command : _commandsVector) {
-                for (std::size_t nbPizza = command.second; nbPizza != 0; nbPizza--) {
-                    kitchen.makePizza(command.first);
+                for (std::size_t nbPizza = std::get<2>(command); nbPizza != 0; nbPizza--) {
+                    kitchen.makePizza(std::get<0>(command), std::get<1>(command));
                 }
             }
         } catch (const plazza::Kitchen::PizzaUnrecognized &err) {

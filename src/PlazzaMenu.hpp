@@ -21,7 +21,7 @@ namespace plazza
     class PlazzaMenu
     {
         public:
-            class ParsingPlazzaMenuFailed : public plazza::Error
+            class ParsingPlazzaMenuFailed : public virtual plazza::Error
             {
                 public:
                     ParsingPlazzaMenuFailed(const std::string& errorMessage):

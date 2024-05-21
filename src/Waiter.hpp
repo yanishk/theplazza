@@ -10,6 +10,7 @@
 
     #include <vector>
     #include <iostream>
+    #include <tuple>
     #include "Error.hpp"
     #include "Stock.hpp"
     #include "ThreadPool.hpp"
@@ -21,7 +22,7 @@ namespace plazza
     class Waiter
     {
         public:
-            class ParsingCommandFailed : public plazza::Error
+            class ParsingCommandFailed : public virtual plazza::Error
             {
                 public:
                     ParsingCommandFailed(const std::string& errorMessage):
@@ -31,7 +32,7 @@ namespace plazza
             Waiter();
             ~Waiter() = default;
             void placeOrders(plazza::Arguments args);
-            std::vector<std::pair<std::string, std::size_t>> getCommands();
+            std::vector<std::tuple<std::string, std::string, std::size_t>> getCommands();
 
         private:
             void parseMultipleCommands(std::string &line);
@@ -46,12 +47,13 @@ namespace plazza
             void printCommands();
             void resetCommandList();
             void upperToLowerCase(std::string &word);
+            void lowertoUpperCase(std::string &word);
             plazza::PlazzaMenu _menu;
             std::vector<std::string> _plazzaIngredientsList;
             std::vector<std::string> _pizzaTypeVector;
             std::vector<std::string> _pizzaSizeVector;
             std::vector<std::vector<std::string>> _tmpCommandsVector;
-            std::vector<std::pair<std::string, std::size_t>> _commandsVector;
+            std::vector<std::tuple<std::string, std::string, std::size_t>> _commandsVector;
             const std::size_t _commandArguments = 3;
     };
 }

@@ -30,8 +30,12 @@ int main(int ac, const char **av)
 
     if (getHelp(ac, av) == 84)
         return 84;
-    if (args.retrieveArgs(av) == 84)
+    try {
+        args.retrieveArgs(av);
+    } catch (std::exception &err) {
+        std::cerr << err.what() << std::endl;
         return 84;
+    }
     try {
         plazza::Waiter waiter;
         waiter.placeOrders(args);

@@ -22,16 +22,16 @@ namespace plazza
     class Kitchen
     {
         public:
-        class PizzaUnrecognized : public plazza::Error
-        {
-            public:
-                PizzaUnrecognized():
-                plazza::Error("Kitchen: Chosen pizza size doesn't exist") {}
-        };
+            class PizzaUnrecognized : public virtual plazza::Error
+            {
+                public:
+                    PizzaUnrecognized():
+                    plazza::Error("Kitchen: Chosen pizza size doesn't exist") {}
+            };
 
             Kitchen(int nbrCooks, int milliseconds, float multiplier, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenu, std::vector<std::string> ingredientsList);
             ~Kitchen();
-            void makePizza(std::string &pizzaName);
+            void makePizza(std::string &pizzaName, std::string &pizzaSize);
             std::shared_ptr<plazza::Stock> getStockObject();
 
         private:
