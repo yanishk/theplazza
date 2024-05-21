@@ -34,6 +34,9 @@ namespace plazza
             void makePizza(std::string &pizzaName, std::string &pizzaSize);
             std::shared_ptr<plazza::Stock> getStockObject();
             int getPizzasInWork();
+            int getAvailableCooks();
+            int getSpaceLeft();
+            void makeStatus();
 
         private:
             float _multiplier;

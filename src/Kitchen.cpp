@@ -41,3 +41,23 @@ int plazza::Kitchen::getPizzasInWork()
 {
     return _threadPool.getWork();
 }
+
+int plazza::Kitchen::getAvailableCooks()
+{
+    return _threadPool.getAvailableCooks();
+}
+
+int plazza::Kitchen::getSpaceLeft()
+{
+    return _threadPool.getSpaceLeft();
+}
+
+void plazza::Kitchen::makeStatus()
+{
+    std::map<std::string, std::size_t> map = getStockObject()->getStock();
+    for (auto it = map.begin(); it != map.end(); it++)
+        std::cout << it->first << ": " << it->second << std::endl;
+    std::cout << "Number of pizzas in work: " << getPizzasInWork() << std::endl;
+    std::cout << "Number of available cooks: " << getAvailableCooks() << std::endl;
+    std::cout << "Space left for pizzas: " << getSpaceLeft() << std::endl;
+}

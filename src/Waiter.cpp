@@ -177,10 +177,7 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
         if (line.length() == 0)
             continue;
         if (line == "status") {
-            std::map<std::string, std::size_t> map = kitchen.getStockObject()->getStock();
-            for (auto it = map.begin(); it != map.end(); it++)
-                std::cout << it->first << ": " << it->second << std::endl;
-            std::cout << "Number of pizzas in work: " << kitchen.getPizzasInWork() << std::endl;
+            kitchen.makeStatus();
             continue;
         }
         try {
