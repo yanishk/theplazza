@@ -25,6 +25,7 @@ namespace plazza {
 
             void putInQueue(std::function<void()> work);
             bool getDone();
+            int getWork();
 
         protected:
         private:
@@ -35,6 +36,7 @@ namespace plazza {
             std::condition_variable _condVar;
             bool _done;
             std::chrono::_V2::steady_clock::time_point _clock;
+            std::size_t _countPizza;
 
     };
 }

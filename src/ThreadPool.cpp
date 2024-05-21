@@ -7,7 +7,7 @@
 
 #include "ThreadPool.hpp"
 
-plazza::ThreadPool::ThreadPool(std::size_t number) : _nbThreads(number), _done(false)
+plazza::ThreadPool::ThreadPool(std::size_t number) : _nbThreads(number), _done(false), _countPizza(0)
 {
     for (std::size_t i = 0; i != _nbThreads; i++) {
         _threads.emplace_back(
@@ -21,8 +21,10 @@ plazza::ThreadPool::ThreadPool(std::size_t number) : _nbThreads(number), _done(f
                             return;
                         work = _work.front();
                         _work.pop();
+                        _countPizza++;
                     }
                     work();
+                    _countPizza--;
                 }
             }
         );
@@ -52,4 +54,9 @@ void plazza::ThreadPool::putInQueue(std::function<void()> work)
 bool plazza::ThreadPool::getDone()
 {
     return _done;
+}
+
+int plazza::ThreadPool::getWork()
+{
+    return _countPizza;
 }

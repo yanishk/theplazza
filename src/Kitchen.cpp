@@ -36,3 +36,8 @@ std::shared_ptr<plazza::Stock> plazza::Kitchen::getStockObject()
 {
     return _stock;
 }
+
+int plazza::Kitchen::getPizzasInWork()
+{
+    return _threadPool.getWork();
+}
