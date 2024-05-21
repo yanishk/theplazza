@@ -15,7 +15,6 @@
 #include <thread>
 #include <queue>
 #include <functional>
-#include <chrono>
 
 namespace plazza {
     class ThreadPool {
@@ -24,7 +23,6 @@ namespace plazza {
             ~ThreadPool();
 
             void putInQueue(std::function<void()> work);
-            bool getDone();
 
         protected:
         private:
@@ -33,8 +31,6 @@ namespace plazza {
             std::size_t _nbThreads;
             std::mutex _mutexPool;
             std::condition_variable _condVar;
-            bool _done;
-            std::chrono::_V2::steady_clock::time_point _clock;
 
     };
 }
