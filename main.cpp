@@ -63,8 +63,6 @@ void ipc(std::vector<int[2]> &pipefdsVector, int fdID)
             close(pipefdsVector.at(0)[0]);
             close(pipefdsVector.at(fdID)[1]);
             read(pipefdsVector.at(fdID)[0], readmessage, MAX_TEXT);
-            // int choice = std::atoi(readmessage);
-            printf("%s %ld\n", readmessage, strlen(readmessage));
             if (std::strcmp(readmessage, "ok") == 0)
                 nbr++;
             else
@@ -120,7 +118,7 @@ int main(int ac, const char **av) {
         }
         write(pipefdsVector.at(freeID)[1], fillMyMessage("ok").c_str(), MAX_TEXT);
         read(pipefdsVector.at(0)[0], finalmessage, MAX_TEXT);
-        printf("In Child: Reading from pipe %d - Message is %s\n",freeID, finalmessage);
+        printf("process %d - number : %s\n",freeID, finalmessage);
 
         if (line == "exit")
             break;
