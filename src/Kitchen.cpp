@@ -26,9 +26,8 @@ void plazza::Kitchen::makePizza(std::string &pizzaName, std::string &pizzaSize)
 
     if (it == _availablePizzas.end())
         throw Kitchen::PizzaUnrecognized();
-    std::shared_ptr<plazza::Pizza> pizza = it->second;
-    _threadPool.putInQueue([this, pizza, pizzaSize] {
-        pizza->cookPizza(pizzaSize, _multiplier, _stock, _millisecond);
+    _threadPool.putInQueue([this, it, pizzaSize] {
+        it->second->cookPizza(pizzaSize, _multiplier, _stock, _millisecond);
     });
 }
 

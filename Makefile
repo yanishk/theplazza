@@ -16,6 +16,7 @@ SRC		=	main.cpp				\
 			src/Kitchen.cpp 		\
 			src/PlazzaMenu.cpp 		\
 			src/Pizza/Pizza.cpp 	\
+			src/Pizza/PizzaInfo.cpp \
 
 OBJ		=	$(SRC:.cpp=.o)
 
