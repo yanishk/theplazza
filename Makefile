@@ -5,21 +5,28 @@
 ## compiles program
 ##
 
-CC		=	g++
+CXX		=	g++
 
-SRC		=	main.cpp			\
-			src/ThreadPool.cpp
+SRC		=	main.cpp				\
+			src/ThreadPool.cpp		\
+			src/Waiter.cpp			\
+			src/Arguments.cpp 		\
+			src/Stock.cpp			\
+			src/Process.cpp			\
+			src/Kitchen.cpp 		\
+			src/PlazzaMenu.cpp 		\
+			src/Pizza/Pizza.cpp 	\
 
 OBJ		=	$(SRC:.cpp=.o)
 
 NAME	=	plazza
 
-CPPFLAGS	=	-std=c++20 -iquote ./src -Wall -Wextra
+CPPFLAGS	=	-std=c++20 -iquote ./src -iquote ./src/Pizza -iquote ./include -g3
 
 all:	$(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) -o $(NAME) $(OBJ)
+	$(CXX) -o $(NAME) $(OBJ)
 
 clean:
 	$(RM) $(OBJ)

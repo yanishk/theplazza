@@ -9,34 +9,22 @@
 #include <string>
 #include <iostream>
 
-plazza::Arguments::Arguments()
+void plazza::Arguments::checkArgValidity() const
 {
+    if (_multiplier <= 0 || _nbrCooks <= 0 || _milliseconds <= 0)
+        throw Arguments::ExpectedPositiveValues();
 }
 
-plazza::Arguments::~Arguments()
-{
-}
-
-int plazza::Arguments::checkArgValidity() const
-{
-    if (_multiplier <= 0 || _nbrCooks <= 0 || _milliseconds <= 0) {
-        std::cerr << "Arguments should be positivie values" << std::endl;
-        return 84;
-    }
-    return 0;
-}
-
-int plazza::Arguments::retrieveArgs(const char **av)
+void plazza::Arguments::retrieveArgs(const char **av)
 {
     try {
         _multiplier = std::stof(av[1]);
         _nbrCooks = std::stoi(av[2]);
         _milliseconds = std::stoi(av[3]);
-    } catch (const std::exception &e) {
-        std::cerr << e.what() << std::endl;
-        return 84;
+    } catch (const std::exception &err) {
+        throw Arguments::FunctionFailure(err.what());
     }
-    return checkArgValidity();
+    checkArgValidity();
 }
 
 int plazza::Arguments::getNbrCooks() const noexcept
