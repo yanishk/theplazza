@@ -35,10 +35,8 @@
 #define MAX_COOK 5
 
 struct my_msg {
-    long int msg_type;
     int nbCook;
-    int test;
-    char some_text[MAX_TEXT];
+    char msg[5];
 };
 
 namespace plazza
