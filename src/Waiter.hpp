@@ -16,6 +16,13 @@
     #include "ThreadPool.hpp"
     #include "Arguments.hpp"
     #include "PlazzaMenu.hpp"
+    #include <cstring>
+    #include <sys/msg.h>
+
+struct my_msg {
+    int nbCook;
+    char msg[5];
+};
 
 namespace plazza
 {
@@ -48,6 +55,12 @@ namespace plazza
             void resetCommandList();
             void upperToLowerCase(std::string &word);
             void lowertoUpperCase(std::string &word);
+
+            std::vector<key_t> IPC(std::string pizzaInfoString, std::vector<key_t> processVector);
+            void forkKitchen(int processNum, int msgrid);
+            plazza::Arguments _args;
+            int nbProcess;
+
             plazza::PlazzaMenu _menu;
             std::vector<std::string> _plazzaIngredientsList;
             std::vector<std::string> _pizzaTypeVector;
