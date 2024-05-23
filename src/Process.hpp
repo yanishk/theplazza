@@ -19,7 +19,7 @@
 
 struct my_msg {
     int nbCook;
-    char msg[7];
+    char msg[100];
 };
 
 namespace plazza {
@@ -30,15 +30,15 @@ namespace plazza {
 
             pid_t forkFunc();
             void IPC(std::string pizzaInfoString);
-            void forkKitchen(int processNum, int msgrid);
+            void forkKitchen(int processNum);
             plazza::Arguments _args;
         private:
-            void createNewProcess(bool createProcess, std::string pizzaInfoString);
+            void createNewProcess(struct my_msg senderReception, struct my_msg receiverReception, std::string pizzaInfoString);
 
-            int msgrid;
+            int _msgrid;
             plazza::PlazzaMenu _menu;
             std::vector<int> _processVector;
-            int nbProcess;
+            std::size_t _nbProcess;
     };
 }
 

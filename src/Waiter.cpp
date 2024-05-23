@@ -169,8 +169,8 @@ std::vector<std::tuple<std::string, std::string, std::size_t>> plazza::Waiter::g
 void plazza::Waiter::placeOrders(plazza::Arguments args)
 {
     std::string line;
-    plazza::Kitchen kitchen(args.getNbrCooks(), args.getMilliseconds(),
-        args.getMultiplier(), _menu.getMenu(),_menu.getIngredients());
+    // plazza::Kitchen kitchen(args.getNbrCooks(), args.getMilliseconds(),
+        // args.getMultiplier(), _menu.getMenu(),_menu.getIngredients());
 
     _process._args = args;
 
@@ -192,7 +192,6 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
                     plazza::PizzaInfo pizza(std::get<0>(command), std::get<1>(command));
                     std::string pizzaInfoString;
                     pizzaInfoString << pizza;
-                    _process.IPC("freeSp");
                     _process.IPC(pizzaInfoString);
                 }
             }

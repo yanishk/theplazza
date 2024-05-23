@@ -61,6 +61,6 @@ void plazza::Kitchen::makeStatus()
     std::cout << "Number of available cooks: " << getAvailableCooks() << std::endl;
     std::cout << "Space left for pizzas: " << getSpaceLeft() << std::endl;
     for (auto &it : _pizzaInCharge) {
-        std::cout << "Pzza being worked on: " << it.first << " " << it.second << std::endl;
+        std::cout << "Pizza being worked on: " << it.first << " " << it.second << std::endl;
     }
 }
