@@ -24,12 +24,13 @@ namespace plazza
             virtual std::size_t getCookingTime() override;
             virtual std::size_t getIngredientNumber() override;
             virtual void pushIngredient(std::string &ingredientName) override;
-            virtual void cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond) override;
+            virtual void cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond, std::vector<std::pair<std::string, std::string>> &pizzaInCharge) override;
 
         private:
             std::vector<std::string> _margIngredients;
             std::string _pizzaName;
             std::size_t _cookingTime;
+            std::mutex _mutexPizza;
     };
 }
 

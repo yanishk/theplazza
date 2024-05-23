@@ -24,7 +24,7 @@ namespace plazza
             virtual std::size_t getCookingTime() = 0;
             virtual std::size_t getIngredientNumber() = 0;
             virtual void pushIngredient(std::string &ingredientName) = 0;
-            virtual void cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond) = 0;
+            virtual void cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond, std::vector<std::pair<std::string, std::string>> &pizzaInCharge) = 0;
     };
 }
 

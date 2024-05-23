@@ -7,6 +7,7 @@
 
 #include "Pizza.hpp"
 #include <memory>
+#include <algorithm>
 
 void plazza::Pizza::setPizzaName(std::string &pizzaName)
 {
@@ -38,12 +39,23 @@ void plazza::Pizza::pushIngredient(std::string &ingredientName)
     _margIngredients.push_back(ingredientName);
 }
 
-void plazza::Pizza::cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond)
+void plazza::Pizza::cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond, std::vector<std::pair<std::string, std::string>> &pizzaInCharge)
 {
-    for (auto &it: _margIngredients) {
-        stock->takeFromStock(it, millisecond);
-    }
+    std::size_t i = 0;
     int timeCooking = static_cast<float>((_cookingTime * 1000) * multiplier);
+
+    for (auto &it: _margIngredients)
+        stock->takeFromStock(it, millisecond);
     std::this_thread::sleep_for(std::chrono::milliseconds(timeCooking));
+    for (auto &it : pizzaInCharge) {
+        {
+            std::unique_lock<std::mutex> lock(_mutexPizza);
+            if (it.first == _pizzaName) {
+                pizzaInCharge.erase(pizzaInCharge.begin() + i);
+                break;
+            }
+        }
+        i++;
+    }
     std::cout << "One " << _pizzaName << " in size " << pizzaSize << " comin' right up" << std::endl;
 }
