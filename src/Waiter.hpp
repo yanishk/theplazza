@@ -35,7 +35,6 @@ namespace plazza
             Waiter();
             ~Waiter() = default;
             void placeOrders(plazza::Arguments args);
-            std::vector<std::tuple<std::string, std::string, std::size_t>> getCommands();
 
         private:
             void parseMultipleCommands(std::string &line);
@@ -52,9 +51,7 @@ namespace plazza
             void resetCommandList();
             void upperToLowerCase(std::string &word);
             void lowertoUpperCase(std::string &word);
-
             plazza::PlazzaMenu _menu;
-            plazza::Process _process;
             std::vector<std::string> _plazzaIngredientsList;
             std::vector<std::string> _pizzaTypeVector;
             std::vector<std::string> _pizzaSizeVector;

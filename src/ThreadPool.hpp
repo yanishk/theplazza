@@ -29,7 +29,6 @@ namespace plazza {
             int getAvailableCooks();
             int getSpaceLeft();
 
-        protected:
         private:
             std::queue<std::function<void()>> _work;
             std::vector<std::thread> _threads;
@@ -37,7 +36,6 @@ namespace plazza {
             std::mutex _mutexPool;
             std::condition_variable _condVar;
             bool _done;
-            std::chrono::_V2::steady_clock::time_point _clock;
             std::size_t _countPizza;
             std::size_t _pizzasIn;
 

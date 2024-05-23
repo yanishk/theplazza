@@ -161,41 +161,29 @@ void plazza::Waiter::parseMultipleCommands(std::string &line)
     fillCommands();
 }
 
-std::vector<std::tuple<std::string, std::string, std::size_t>> plazza::Waiter::getCommands()
-{
-    return _commandsVector;
-}
-
 void plazza::Waiter::placeOrders(plazza::Arguments args)
 {
     std::string line;
-    // plazza::Kitchen kitchen(args.getNbrCooks(), args.getMilliseconds(),
-        // args.getMultiplier(), _menu.getMenu(),_menu.getIngredients());
-
-    _process._args = args;
+    plazza::Process process(args, _menu.getMenu(), _menu.getIngredients());
 
     while (std::getline(std::cin, line)) {
         if (line.length() == 0)
             continue;
         if (line == "status") {
-            _process.IPC(line);
+            process.IPC(line);
             continue;
         }
         try {
             parseMultipleCommands(line);
-        } catch (const plazza::Waiter::ParsingCommandFailed &err) {
-            std::cerr << err.what() << std::endl;
-        }
-        try {
             for (auto &command : _commandsVector) {
                 for (std::size_t nbPizza = std::get<2>(command); nbPizza != 0; nbPizza--) {
                     plazza::PizzaInfo pizza(std::get<0>(command), std::get<1>(command));
                     std::string pizzaInfoString;
                     pizzaInfoString << pizza;
-                    _process.IPC(pizzaInfoString);
+                    process.IPC(pizzaInfoString);
                 }
             }
-        } catch (const plazza::Kitchen::PizzaUnrecognized &err) {
+        } catch (const std::exception &err) {
             std::cerr << err.what() << std::endl;
         }
         resetCommandList();
