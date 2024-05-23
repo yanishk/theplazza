@@ -21,7 +21,7 @@
 
 struct my_msg {
     int nbCook;
-    char msg[5];
+    char msg[7];
 };
 
 namespace plazza

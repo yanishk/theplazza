@@ -182,6 +182,19 @@ void plazza::Waiter::forkKitchen(int processNum, int msgrid)
             struct my_msg new_some_data;
             msgrcv(processNum,(void *)&some_data,sizeof(&some_data),0,0);
             all_pass++;
+            if (std::strcmp(some_data.msg, "status") == 0) {
+                std::cout << "Status of process : " << pid << std::endl;
+                kitchen.makeStatus();
+                new_some_data.nbCook = 0;
+                msgsnd(msgrid, (void *)&new_some_data, sizeof(&new_some_data), IPC_NOWAIT);
+                std::cout << std::endl;
+                continue;
+            }
+            if (std::strcmp(some_data.msg, "freeSp") == 0) {
+                new_some_data.nbCook = kitchen.getAvailableCooks();
+                msgsnd(msgrid, (void *)&new_some_data, sizeof(&new_some_data), IPC_NOWAIT);
+                continue;
+            }
             if (kitchen.getAvailableCooks() > 0) {
                 nbCook++;
                 plazza::PizzaInfo pizza;
@@ -212,6 +225,10 @@ std::vector<key_t> plazza::Waiter::IPC(std::string pizzaInfoString, std::vector<
         some_data.nbCook = 1;
         msgsnd(processVector.at(i), (void *)&some_data, sizeof(&some_data), IPC_NOWAIT);
         msgrcv(msgrid,(void *)&new_some_data,sizeof(&new_some_data),0,0);
+        if (pizzaInfoString.compare("freeSp") == 0) {
+            createProcess = false;
+            continue;
+        }
         if (new_some_data.nbCook <= 0)
             createProcess = true;
         else {
@@ -221,10 +238,14 @@ std::vector<key_t> plazza::Waiter::IPC(std::string pizzaInfoString, std::vector<
         }
     }
 
-    if (createProcess) {
+    if (createProcess && pizzaInfoString.compare("status") != 0 && pizzaInfoString.compare("freeSp")) {
         nbProcess += 1;
         key_t newKey = ftok("./src/Waiter.cpp", nbProcess);
-        int processID = msgget(newKey, 0666|IPC_CREAT);
+        if (newKey == -1) {
+            std::cerr << "faile to create process" << std::endl;
+        }
+        int processID = 0;
+        processID = msgget(newKey, 0666|IPC_CREAT);
         forkKitchen(processID, msgrid);
         some_data.nbCook = 0;
         processVector.push_back(processID);
@@ -249,7 +270,7 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
         if (line.length() == 0)
             continue;
         if (line == "status") {
-            kitchen.makeStatus();
+            processVector = IPC(line, processVector);
             continue;
         }
         try {
@@ -263,6 +284,7 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
                     plazza::PizzaInfo pizza(std::get<0>(command), std::get<1>(command));
                     std::string pizzaInfoString;
                     pizzaInfoString << pizza;
+                    processVector = IPC("freeSp", processVector);
                     processVector = IPC(pizzaInfoString, processVector);
                 }
             }
