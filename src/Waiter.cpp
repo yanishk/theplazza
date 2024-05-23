@@ -115,7 +115,7 @@ void plazza::Waiter::changeCommandsCase()
     }
 }
 
-bool isPizzaNumber(std::string &line)
+bool plazza::Waiter::isPizzaNumber(std::string &line)
 {
     std::size_t pos = line.find_first_of('x');
 
@@ -140,7 +140,6 @@ void plazza::Waiter::checkCommands()
 
 void plazza::Waiter::fillCommands()
 {
-
     for (auto &command : _tmpCommandsVector) {
         lowertoUpperCase(command.at(1));
         _commandsVector.push_back(std::make_tuple(command.at(0), command.at(1), std::atoi(command.at(2).substr(1, command.at(2).length()).c_str())));
@@ -185,7 +184,7 @@ void plazza::Waiter::forkKitchen(int processNum, int msgrid)
             all_pass++;
             if (kitchen.getAvailableCooks() > 0) {
                 nbCook++;
-                plazza::PizzaInfo pizza(plazza::PizzaType::Americana, plazza::PizzaSize::XXL);
+                plazza::PizzaInfo pizza;
                 some_data.msg >> pizza;
                 std::string pizzaTypeString = pizza.getPizzaTypeString();
                 std::string pizzaSizeString = pizza.getPizzaSizeString();
@@ -235,7 +234,6 @@ std::vector<key_t> plazza::Waiter::IPC(std::string pizzaInfoString, std::vector<
 
     return processVector;
 }
-
 
 void plazza::Waiter::placeOrders(plazza::Arguments args)
 {

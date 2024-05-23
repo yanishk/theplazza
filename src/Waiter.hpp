@@ -48,6 +48,7 @@ namespace plazza
             void parseWord(std::string &line, std::vector<std::string> &commandInfos, const std::size_t &wordIndex);
             bool isDelim(std::string &line);
             void checkCommandEnd(const std::string &line);
+            bool isPizzaNumber(std::string &line);
             void changeCommandsCase();
             void checkCommands();
             void printTmpCommands();
