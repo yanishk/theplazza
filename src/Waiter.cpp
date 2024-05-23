@@ -241,10 +241,9 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
     std::string line;
     plazza::Kitchen kitchen(args.getNbrCooks(), args.getMilliseconds(),
         args.getMultiplier(), _menu.getMenu(),_menu.getIngredients());
-    
+
     _args = args;
-    
-    nbrCooks = args.getNbrCooks();
+
     std::vector<int> processVector;
 
     while (std::getline(std::cin, line)) {

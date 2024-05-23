@@ -16,13 +16,8 @@
     #include "ThreadPool.hpp"
     #include "Arguments.hpp"
     #include "PlazzaMenu.hpp"
-    #include<unistd.h>
-    #include<stdlib.h>
     #include <cstring>
-    #include <queue>
-    #include<sys/types.h>
-    #include<sys/ipc.h>
-    #include<sys/msg.h>
+    #include <sys/msg.h>
 
 struct my_msg {
     int nbCook;
@@ -63,10 +58,7 @@ namespace plazza
 
             std::vector<key_t> IPC(std::string pizzaInfoString, std::vector<key_t> processVector);
             void forkKitchen(int processNum, int msgrid);
-            int fdID;
-            int nbrCooks;
             plazza::Arguments _args;
-            std::vector<int[2]> _pipefdsVector;
 
             plazza::PlazzaMenu _menu;
             std::vector<std::string> _plazzaIngredientsList;
