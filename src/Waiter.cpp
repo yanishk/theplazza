@@ -168,55 +168,70 @@ std::vector<std::tuple<std::string, std::string, std::size_t>> plazza::Waiter::g
     return _commandsVector;
 }
 
-void plazza::Waiter::forkKitchen(std::vector<int[2]> &pipefdsVector, int fdID)
+void plazza::Waiter::forkKitchen(int processNum, int msgrid)
 {
     pid_t pid = fork();
 
     if (pid != 0) {
-        plazza::Kitchen kitchen(_args.getNbrCooks(), _args.getMilliseconds(),_args.getMultiplier(), _menu.getMenu(), _menu.getIngredients());
+        key_t keyReception = 99;
+        int nbCook = 0;
         while (1) {
-            std::vector<std::tuple<std::string, std::string, std::size_t>> command(1);
-            bool is_full = false;
-            close(_pipefdsVector.at(0)[0]);
-            close(_pipefdsVector.at(fdID)[1]);
-            read(_pipefdsVector.at(fdID)[0], &command, sizeof(&command));
-            std::cout << std::get<0>(command.at(0)) << " test" << std::endl;
-
-            if (kitchen.getPizzasInWork() >= _args.getNbrCooks()) {
-                is_full = true;
-                write(_pipefdsVector.at(0)[1], &is_full, sizeof(bool));
-            } else {
-                // kitchen.makePizza(std::get<0>(test.at(0)), std::get<1>(test.at(0)));
-                write(_pipefdsVector.at(0)[1], &is_full, sizeof(bool));
-            }
+            struct my_msg some_data;
+            struct my_msg new_some_data;
+            msgrcv(processNum,(void *)&some_data,sizeof(&some_data),0,0);
+            if (some_data.nbCook != -1)
+                nbCook++;
+            std::cout << RED << "Data received: \"" << some_data.nbCook << "\" on process : " << pid << " cook : " << nbCook << RESET << std::endl;
+            some_data.nbCook = nbCook;
+            new_some_data.nbCook = nbCook;
+            std::cout << RED << "nb cook : " << some_data.nbCook << " test : " << some_data.test << RESET << std::endl;
+            msgsnd(msgrid, (void *)&new_some_data, sizeof(&new_some_data), IPC_NOWAIT);
         }
     }
 }
 
-void plazza::Waiter::IPC(std::vector<int[2]> &pipefdsVector, std::tuple<std::string, std::string, std::size_t> order)
+std::vector<key_t> plazza::Waiter::IPC(std::tuple<std::string, std::string, std::size_t> &command, std::vector<key_t> processVector)
 {
-    bool is_full = false;
-    int freeID = 0;
-    std::vector<std::tuple<std::string, std::string, std::size_t>> command;
-    command.push_back(order);
-    
-    for (int i = 0; i < fdID; i++) {
-        std::cout << std::get<0>(command.at(0)) << " test1" << std::endl;
-        write(_pipefdsVector.at(i + 1)[1], &command, sizeof(&command));
-        std::cout << std::get<0>(command.at(0)) << " test2" << std::endl;
-        read(_pipefdsVector.at(0)[0], &is_full, sizeof(bool));
-        std::cout << std::get<0>(command.at(0)) << " test3" << std::endl;
-        if (!is_full) {
+    int msgrid;
+    int kitchenID = 0;
+    key_t keyReception = 99;
+    struct my_msg some_data;
+    struct my_msg new_some_data;
+    bool createProcess = true;
+    msgrid=msgget(keyReception, 0666|IPC_CREAT);
+
+    for (std::size_t i = 0; i < processVector.size(); i++) {
+        some_data.nbCook = -1;
+        msgsnd(processVector.at(i), (void *)&some_data, sizeof(&some_data), IPC_NOWAIT);
+        msgrcv(msgrid,(void *)&new_some_data,sizeof(&new_some_data),0,0);
+        std::cout << GREEN << "cook1 = " << new_some_data.nbCook << RESET << std::endl;
+        if (new_some_data.nbCook >= 5)
+            createProcess = true;
+        else {
+            createProcess = false;
+            kitchenID = processVector.back();
             break;
         }
     }
-    if (is_full) {
-        fdID++;
-        forkKitchen(pipefdsVector, fdID);
-        freeID = fdID;
-        write(_pipefdsVector.at(freeID)[1], &command, sizeof(command));
-        read(_pipefdsVector.at(0)[0], &is_full, sizeof(bool));
+
+    if (createProcess) {
+        key_t newKey = processVector.size() + 100;
+        int processID = msgget(newKey, 0666|IPC_CREAT);
+        std::cout << "pass, new key : " << newKey << std::endl;
+        forkKitchen(processID, msgrid);
+        some_data.nbCook = 0;
+        processVector.push_back(processID);
+        kitchenID=processVector.back();
     }
+    some_data.nbCook = 0;
+    some_data.test = 2;
+    msgsnd(kitchenID, (void *)&some_data, sizeof(&some_data), IPC_NOWAIT);
+
+    msgrcv(msgrid,(void *)&new_some_data,sizeof(&new_some_data),0,0);
+    std::cout << GREEN << "cook2 = " << new_some_data.nbCook << RESET << std::endl;
+
+    std::cout << "ID: " << kitchenID << std::endl;
+    return processVector;
 }
 
 void plazza::Waiter::placeOrders(plazza::Arguments args)
@@ -225,11 +240,8 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
     plazza::Kitchen kitchen(args.getNbrCooks(), args.getMilliseconds(),
         args.getMultiplier(), _menu.getMenu(),_menu.getIngredients());
     nbrCooks = args.getNbrCooks();
-    std::vector<int[2]> pipefdsVector(1024);
-    for (int i = 0; i < 1024; i++) {
-        pipe(_pipefdsVector[i]);
-    }
-    forkKitchen(pipefdsVector, 1);
+
+    std::vector<int> processVector;
 
     while (std::getline(std::cin, line)) {
         if (line.length() == 0)
@@ -251,7 +263,7 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
             for (auto &command : _commandsVector) {
                 for (std::size_t nbPizza = std::get<2>(command); nbPizza != 0; nbPizza--) {
                     // kitchen.makePizza(std::get<0>(command), std::get<1>(command));
-                    IPC(pipefdsVector, command);
+                    processVector = IPC(command, processVector);
                 }
             }
         } catch (const plazza::Kitchen::PizzaUnrecognized &err) {

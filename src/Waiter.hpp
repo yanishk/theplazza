@@ -22,6 +22,24 @@
     #include<unistd.h>
     #include<stdlib.h>
     #include <cstring>
+    #include <queue>
+    #include<sys/types.h>
+    #include<sys/ipc.h>
+    #include<sys/msg.h>
+
+#define RED "\e[0;31m"
+#define GREEN "\e[0;32m"
+#define RESET "\e[0m"
+
+#define MAX_TEXT 512
+#define MAX_COOK 5
+
+struct my_msg {
+    long int msg_type;
+    int nbCook;
+    int test;
+    char some_text[MAX_TEXT];
+};
 
 namespace plazza
 {
@@ -55,8 +73,8 @@ namespace plazza
             void upperToLowerCase(std::string &word);
             void lowertoUpperCase(std::string &word);
 
-            void IPC(std::vector<int[2]> &pipefdsVector, std::tuple<std::string, std::string, std::size_t> order);
-            void forkKitchen(std::vector<int[2]> &pipefdsVector, int fdID);
+            std::vector<key_t> IPC(std::tuple<std::string, std::string, std::size_t> &command, std::vector<key_t> processVector);
+            void forkKitchen(int processNum, int msgrid);
             int fdID;
             int nbrCooks;
             plazza::Arguments _args;
