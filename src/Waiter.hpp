@@ -59,6 +59,7 @@ namespace plazza
             std::vector<key_t> IPC(std::string pizzaInfoString, std::vector<key_t> processVector);
             void forkKitchen(int processNum, int msgrid);
             plazza::Arguments _args;
+            int nbProcess;
 
             plazza::PlazzaMenu _menu;
             std::vector<std::string> _plazzaIngredientsList;

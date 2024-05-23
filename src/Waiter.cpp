@@ -223,12 +223,13 @@ std::vector<key_t> plazza::Waiter::IPC(std::string pizzaInfoString, std::vector<
     }
 
     if (createProcess) {
-        key_t newKey = processVector.size() + 100;
+        nbProcess += 1;
+        key_t newKey = ftok("./src/Waiter.cpp", nbProcess);
         int processID = msgget(newKey, 0666|IPC_CREAT);
         forkKitchen(processID, msgrid);
         some_data.nbCook = 0;
         processVector.push_back(processID);
-        kitchenID=processVector.back();
+        kitchenID = processVector.back();
         IPC(pizzaInfoString, processVector);
     }
 
