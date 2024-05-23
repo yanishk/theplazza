@@ -19,20 +19,10 @@
     #include<unistd.h>
     #include<stdlib.h>
     #include <cstring>
-    #include<unistd.h>
-    #include<stdlib.h>
-    #include <cstring>
     #include <queue>
     #include<sys/types.h>
     #include<sys/ipc.h>
     #include<sys/msg.h>
-
-#define RED "\e[0;31m"
-#define GREEN "\e[0;32m"
-#define RESET "\e[0m"
-
-#define MAX_TEXT 512
-#define MAX_COOK 5
 
 struct my_msg {
     int nbCook;
@@ -71,14 +61,13 @@ namespace plazza
             void upperToLowerCase(std::string &word);
             void lowertoUpperCase(std::string &word);
 
-            std::vector<key_t> IPC(std::tuple<std::string, std::string, std::size_t> &command, std::vector<key_t> processVector);
+            std::vector<key_t> IPC(std::string pizzaInfoString, std::vector<key_t> processVector);
             void forkKitchen(int processNum, int msgrid);
             int fdID;
             int nbrCooks;
             plazza::Arguments _args;
             std::vector<int[2]> _pipefdsVector;
-            
-            
+
             plazza::PlazzaMenu _menu;
             std::vector<std::string> _plazzaIngredientsList;
             std::vector<std::string> _pizzaTypeVector;
