@@ -22,7 +22,7 @@ namespace plazza
     {
         public:
             Stock(std::vector<std::string> ingredientsList);
-            ~Stock();
+            ~Stock() = default;
 
             static void refillStock(std::shared_ptr<plazza::Stock> stock, int time);
             void takeFromStock(std::string, int millisecond);

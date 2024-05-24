@@ -14,10 +14,6 @@ plazza::Stock::Stock(std::vector<std::string> ingredientsList)
     }
 }
 
-plazza::Stock::~Stock()
-{
-}
-
 void plazza::Stock::refillStock(std::shared_ptr<plazza::Stock> stock, int time)
 {
     while (1) {

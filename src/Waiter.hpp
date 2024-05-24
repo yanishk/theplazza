@@ -8,17 +8,15 @@
 #ifndef WAITER_HPP_
 #define WAITER_HPP_
 
+    #include "Error.hpp"
+    #include "Arguments.hpp"
+    #include "PlazzaMenu.hpp"
+    #include "Process.hpp"
     #include <vector>
     #include <iostream>
     #include <tuple>
-    #include "Error.hpp"
-    #include "Stock.hpp"
-    #include "ThreadPool.hpp"
-    #include "Arguments.hpp"
-    #include "PlazzaMenu.hpp"
     #include <cstring>
     #include <sys/msg.h>
-    #include "Process.hpp"
 
 namespace plazza
 {

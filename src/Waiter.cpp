@@ -7,10 +7,7 @@
 
 #include <thread>
 #include <algorithm>
-
 #include "Waiter.hpp"
-#include "Arguments.hpp"
-#include "Kitchen.hpp"
 #include "PizzaInfo.hpp"
 
 plazza::Waiter::Waiter()
@@ -169,11 +166,11 @@ void plazza::Waiter::placeOrders(plazza::Arguments args)
     while (std::getline(std::cin, line)) {
         if (line.length() == 0)
             continue;
-        if (line == "status") {
-            process.IPC(line);
-            continue;
-        }
         try {
+            if (line == "status") {
+                process.IPC(line);
+                continue;
+            }
             parseMultipleCommands(line);
             for (auto &command : _commandsVector) {
                 for (std::size_t nbPizza = std::get<2>(command); nbPizza != 0; nbPizza--) {

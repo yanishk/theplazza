@@ -8,7 +8,6 @@
 #include <iostream>
 #include <string>
 #include "Arguments.hpp"
-#include "ThreadPool.hpp"
 #include "Waiter.hpp"
 
 int getHelp(int ac, const char **av)
@@ -34,7 +33,7 @@ int main(int ac, const char **av)
         args.retrieveArgs(av);
         plazza::Waiter waiter;
         waiter.placeOrders(args);
-    } catch(const std::exception &err) {
+    } catch (const std::exception &err) {
         std::cerr << err.what() << std::endl;
         return 84;
     }

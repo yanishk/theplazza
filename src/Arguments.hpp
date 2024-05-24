@@ -39,11 +39,10 @@ namespace plazza
             int getMilliseconds() const noexcept;
             float getMultiplier() const noexcept;
 
-        protected:
+        private:
             float _multiplier;
             int _nbrCooks;
             int _milliseconds;
-        private:
     };
 }
 
