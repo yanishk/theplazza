@@ -62,7 +62,7 @@ int plazza::Kitchen::getPizzasInWork()
 
 int plazza::Kitchen::getAvailableCooks()
 {
-    return _threadPool.getAvailableCooks();
+    return _threadPool.getAvailableThreads();
 }
 
 int plazza::Kitchen::getSpaceLeft()

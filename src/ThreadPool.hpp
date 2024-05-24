@@ -17,16 +17,19 @@
 #include <functional>
 #include <chrono>
 
-namespace plazza {
-    class ThreadPool {
+namespace plazza
+{
+    class ThreadPool
+    {
         public:
             ThreadPool(std::size_t number);
             ~ThreadPool();
 
+            void threadRoutine();
             void putInQueue(std::function<void()> work);
             bool getDone();
             int getWork();
-            int getAvailableCooks();
+            int getAvailableThreads();
             int getSpaceLeft();
 
         private:
@@ -35,9 +38,9 @@ namespace plazza {
             std::size_t _nbThreads;
             std::mutex _mutexPool;
             std::condition_variable _condVar;
+            std::size_t _countThreadWorking;
+            std::size_t _countFunctionsInQueue;
             bool _done;
-            std::size_t _countPizza;
-            std::size_t _pizzasIn;
 
     };
 }
