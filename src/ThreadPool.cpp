@@ -7,26 +7,13 @@
 
 #include "ThreadPool.hpp"
 
-plazza::ThreadPool::ThreadPool(std::size_t number) : _nbThreads(number), _done(false), _countPizza(0), _pizzasIn(0)
+plazza::ThreadPool::ThreadPool(std::size_t number) : _nbThreads(number), _done(false),
+    _countThreadWorking(0), _countFunctionsInQueue(0)
 {
     for (std::size_t i = 0; i != _nbThreads; i++) {
         _threads.emplace_back(
             [this] {
-                while (1) {
-                    std::function<void()> work;
-                    {
-                        std::unique_lock<std::mutex> lock(_mutexPool);
-                        _condVar.wait(lock, [this] { return !_work.empty() || _done;});
-                        if (_work.empty() && _done)
-                            return;
-                        work = _work.front();
-                        _work.pop();
-                        _countPizza++;
-                    }
-                    work();
-                    _countPizza--;
-                    _pizzasIn--;
-                }
+                threadRoutine();
             }
         );
     }
@@ -43,12 +30,31 @@ plazza::ThreadPool::~ThreadPool()
         it.join();
 }
 
+void plazza::ThreadPool::threadRoutine()
+{
+    while (1) {
+        std::function<void()> work;
+        {
+            std::unique_lock<std::mutex> lock(_mutexPool);
+            _condVar.wait(lock, [this] { return !_work.empty() || _done;});
+            if (_work.empty() && _done)
+                return;
+            work = _work.front();
+            _work.pop();
+            _countThreadWorking++;
+        }
+        work();
+        _countThreadWorking--;
+        _countFunctionsInQueue--;
+    }
+}
+
 void plazza::ThreadPool::putInQueue(std::function<void()> work)
 {
     {
         std::unique_lock<std::mutex> lock(_mutexPool);
         _work.push(work);
-        _pizzasIn++;
+        _countFunctionsInQueue++;
     }
     _condVar.notify_one();
 }
@@ -60,18 +66,19 @@ bool plazza::ThreadPool::getDone()
 
 int plazza::ThreadPool::getWork()
 {
-    return _countPizza;
+    return _countThreadWorking;
 }
 
-int plazza::ThreadPool::getAvailableCooks()
+int plazza::ThreadPool::getAvailableThreads()
 {
-    int availCooks = _nbThreads - _countPizza;
-    if (availCooks < 0)
+    int availThreads = _nbThreads - _countThreadWorking;
+
+    if (availThreads < 0)
         return 0;
-    return availCooks;
+    return availThreads;
 }
 
 int plazza::ThreadPool::getSpaceLeft()
 {
-    return (_nbThreads * 2) - _pizzasIn;
+    return (_nbThreads * 2) - _countFunctionsInQueue;
 }

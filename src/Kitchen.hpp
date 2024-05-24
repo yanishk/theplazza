@@ -31,12 +31,13 @@ namespace plazza
 
             Kitchen(int nbrCooks, int milliseconds, float multiplier, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenu, std::vector<std::string> ingredientsList);
             ~Kitchen();
+            bool needToCloseKitchen();
             void makePizza(std::string &pizzaName, std::string &pizzaSize);
             std::shared_ptr<plazza::Stock> getStockObject();
             int getPizzasInWork();
             int getAvailableCooks();
             int getSpaceLeft();
-            void makeStatus();
+            void makeStatus(std::size_t nbProcess);
 
         private:
             float _multiplier;
@@ -46,6 +47,8 @@ namespace plazza
             std::thread _stockThread;
             int _millisecond;
             std::vector<std::pair<std::string, std::string>> _pizzaInCharge;
+            std::chrono::_V2::steady_clock::time_point _clockT0;
+            std::chrono::_V2::steady_clock::time_point _clockT1;
     };
 }
 

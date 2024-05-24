@@ -8,8 +8,7 @@
 #ifndef PROCESS_HPP_
 #define PROCESS_HPP_
 
-    #include "unistd.h"
-
+    #include <unistd.h>
     #include <cstring>
     #include <sys/msg.h>
     #include <vector>
@@ -19,11 +18,13 @@
 
 struct my_msg {
     int nbCook;
-    char msg[7];
+    char msg[100];
 };
 
-namespace plazza {
-    class Process {
+namespace plazza
+{
+    class Process
+    {
         public:
             class FunctionFailure : public virtual plazza::Error
             {
@@ -33,20 +34,20 @@ namespace plazza {
             };
             Process(plazza::Arguments args, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenuVector, std::vector<std::string> plazzaIngredientsVector);
             ~Process() = default;
+            void IPC(std::string &pizzaInfoString);
 
-            void IPC(std::string pizzaInfoString);
-            plazza::Arguments _args;
         private:
-            void createNewProcess(bool createProcess, std::string pizzaInfoString);
             pid_t forkFunc();
-            void forkKitchen(int processNum, int msgrid);
-
+            void forkKitchen(int processNum);
+            void createNewProcess(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString);
+            void getStatus(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString);
+            void sendPizza(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString);
             int _msgrid;
-            plazza::PlazzaMenu _menu;
-            std::vector<int> _processVector;
-            std::size_t _nbProcess;
             std::vector<std::shared_ptr<plazza::Pizza>>  _plazzaMenuVector;
             std::vector<std::string> _plazzaIngredientsVector;
+            plazza::Arguments _args;
+            std::vector<int> _processVector;
+            std::size_t _nbProcess;
     };
 }
 
