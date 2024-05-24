@@ -147,7 +147,7 @@ void plazza::Waiter::fillCommands()
 
 void plazza::Waiter::parseMultipleCommands(std::string &line)
 {
-    std::size_t pos;
+    std::size_t pos = 0;
     std::string command;
 
     while (pos != std::string::npos) {

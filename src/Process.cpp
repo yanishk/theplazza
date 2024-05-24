@@ -29,6 +29,7 @@ void plazza::Process::forkKitchen(int processNum)
     struct my_msg receiverKitchen;
     struct my_msg senderKitchen;
 
+    memset(&senderKitchen.msg, 0, sizeof(&senderKitchen.msg));
     if (pid == -1)
         throw plazza::Process::FunctionFailure("fork");
     if (pid == 0) {
@@ -46,6 +47,7 @@ void plazza::Process::forkKitchen(int processNum)
                 kitchen.makePizza(pizzaTypeString, pizzaSizeString);
             }
             senderKitchen.nbCook = kitchen.getSpaceLeft();
+            std::strcpy(senderKitchen.msg, "received");
             msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
         }
     }
