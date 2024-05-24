@@ -45,6 +45,7 @@ namespace plazza
             std::unordered_map<std::string, std::shared_ptr<plazza::Pizza>> _availablePizzas;
             std::thread _stockThread;
             int _millisecond;
+            std::vector<std::pair<std::string, std::string>> _pizzaInCharge;
     };
 }
 

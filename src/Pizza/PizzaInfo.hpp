@@ -43,7 +43,7 @@ namespace plazza
                     PizzaInfoError(const std::string& message):
                     plazza::Error("PizzaInfo: " + message) {}
             };
-
+            PizzaInfo();
             PizzaInfo(plazza::PizzaType type, plazza::PizzaSize size);
             PizzaInfo(std::string &stringType, std::string &stringSize);
             std::string getPizzaTypeString();

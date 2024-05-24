@@ -18,11 +18,7 @@
     #include "PlazzaMenu.hpp"
     #include <cstring>
     #include <sys/msg.h>
-
-struct my_msg {
-    int nbCook;
-    char msg[5];
-};
+    #include "Process.hpp"
 
 namespace plazza
 {
@@ -39,7 +35,6 @@ namespace plazza
             Waiter();
             ~Waiter() = default;
             void placeOrders(plazza::Arguments args);
-            std::vector<std::tuple<std::string, std::string, std::size_t>> getCommands();
 
         private:
             void parseMultipleCommands(std::string &line);
@@ -48,6 +43,7 @@ namespace plazza
             void parseWord(std::string &line, std::vector<std::string> &commandInfos, const std::size_t &wordIndex);
             bool isDelim(std::string &line);
             void checkCommandEnd(const std::string &line);
+            bool isPizzaNumber(std::string &line);
             void changeCommandsCase();
             void checkCommands();
             void printTmpCommands();
@@ -55,12 +51,6 @@ namespace plazza
             void resetCommandList();
             void upperToLowerCase(std::string &word);
             void lowertoUpperCase(std::string &word);
-
-            std::vector<key_t> IPC(std::string pizzaInfoString, std::vector<key_t> processVector);
-            void forkKitchen(int processNum, int msgrid);
-            plazza::Arguments _args;
-            int nbProcess;
-
             plazza::PlazzaMenu _menu;
             std::vector<std::string> _plazzaIngredientsList;
             std::vector<std::string> _pizzaTypeVector;

@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "Waiter.hpp"
-#include "Process.hpp"
 #include "Arguments.hpp"
 #include "Kitchen.hpp"
 #include "PizzaInfo.hpp"
@@ -115,7 +114,7 @@ void plazza::Waiter::changeCommandsCase()
     }
 }
 
-bool isPizzaNumber(std::string &line)
+bool plazza::Waiter::isPizzaNumber(std::string &line)
 {
     std::size_t pos = line.find_first_of('x');
 
@@ -140,7 +139,6 @@ void plazza::Waiter::checkCommands()
 
 void plazza::Waiter::fillCommands()
 {
-
     for (auto &command : _tmpCommandsVector) {
         lowertoUpperCase(command.at(1));
         _commandsVector.push_back(std::make_tuple(command.at(0), command.at(1), std::atoi(command.at(2).substr(1, command.at(2).length()).c_str())));
@@ -163,112 +161,29 @@ void plazza::Waiter::parseMultipleCommands(std::string &line)
     fillCommands();
 }
 
-std::vector<std::tuple<std::string, std::string, std::size_t>> plazza::Waiter::getCommands()
-{
-    return _commandsVector;
-}
-
-void plazza::Waiter::forkKitchen(int processNum, int msgrid)
-{
-    pid_t pid = fork();
-
-    if (pid != 0) {
-        plazza::Kitchen kitchen(_args.getNbrCooks(), _args.getMilliseconds(),
-            _args.getMultiplier(), _menu.getMenu(),_menu.getIngredients());
-        key_t keyReception = 99;
-        int nbCook = 0;
-        int all_pass = 0;
-        while (1) {
-            struct my_msg some_data;
-            struct my_msg new_some_data;
-            msgrcv(processNum,(void *)&some_data,sizeof(&some_data),0,0);
-            all_pass++;
-            if (kitchen.getAvailableCooks() > 0) {
-                nbCook++;
-                plazza::PizzaInfo pizza(plazza::PizzaType::Americana, plazza::PizzaSize::XXL);
-                some_data.msg >> pizza;
-                std::string pizzaTypeString = pizza.getPizzaTypeString();
-                std::string pizzaSizeString = pizza.getPizzaSizeString();
-                kitchen.makePizza(pizzaTypeString, pizzaSizeString);
-            }
-
-            new_some_data.nbCook = kitchen.getAvailableCooks();
-            msgsnd(msgrid, (void *)&new_some_data, sizeof(&new_some_data), IPC_NOWAIT);
-        }
-    }
-}
-
-std::vector<key_t> plazza::Waiter::IPC(std::string pizzaInfoString, std::vector<key_t> processVector)
-{
-    int msgrid;
-    int kitchenID = 0;
-    key_t keyReception = 99;
-    struct my_msg some_data;
-    struct my_msg new_some_data;
-    bool createProcess = true;
-    msgrid=msgget(keyReception, 0666|IPC_CREAT);
-
-    for (std::size_t i = 0; i < processVector.size(); i++) {
-        std::strcpy(some_data.msg, pizzaInfoString.c_str());
-        some_data.nbCook = 1;
-        msgsnd(processVector.at(i), (void *)&some_data, sizeof(&some_data), IPC_NOWAIT);
-        msgrcv(msgrid,(void *)&new_some_data,sizeof(&new_some_data),0,0);
-        if (new_some_data.nbCook <= 0)
-            createProcess = true;
-        else {
-            createProcess = false;
-            kitchenID = processVector.at(i);
-            break;
-        }
-    }
-
-    if (createProcess) {
-        nbProcess += 1;
-        key_t newKey = ftok("./src/Waiter.cpp", nbProcess);
-        int processID = msgget(newKey, 0666|IPC_CREAT);
-        forkKitchen(processID, msgrid);
-        some_data.nbCook = 0;
-        processVector.push_back(processID);
-        kitchenID = processVector.back();
-        IPC(pizzaInfoString, processVector);
-    }
-
-    return processVector;
-}
-
-
 void plazza::Waiter::placeOrders(plazza::Arguments args)
 {
     std::string line;
-    plazza::Kitchen kitchen(args.getNbrCooks(), args.getMilliseconds(),
-        args.getMultiplier(), _menu.getMenu(),_menu.getIngredients());
-
-    _args = args;
-
-    std::vector<int> processVector;
+    plazza::Process process(args, _menu.getMenu(), _menu.getIngredients());
 
     while (std::getline(std::cin, line)) {
         if (line.length() == 0)
             continue;
         if (line == "status") {
-            kitchen.makeStatus();
+            process.IPC(line);
             continue;
         }
         try {
             parseMultipleCommands(line);
-        } catch (const plazza::Waiter::ParsingCommandFailed &err) {
-            std::cerr << err.what() << std::endl;
-        }
-        try {
             for (auto &command : _commandsVector) {
                 for (std::size_t nbPizza = std::get<2>(command); nbPizza != 0; nbPizza--) {
                     plazza::PizzaInfo pizza(std::get<0>(command), std::get<1>(command));
                     std::string pizzaInfoString;
                     pizzaInfoString << pizza;
-                    processVector = IPC(pizzaInfoString, processVector);
+                    process.IPC(pizzaInfoString);
                 }
             }
-        } catch (const plazza::Kitchen::PizzaUnrecognized &err) {
+        } catch (const std::exception &err) {
             std::cerr << err.what() << std::endl;
         }
         resetCommandList();

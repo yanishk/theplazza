@@ -26,8 +26,9 @@ void plazza::Kitchen::makePizza(std::string &pizzaName, std::string &pizzaSize)
 
     if (it == _availablePizzas.end())
         throw Kitchen::PizzaUnrecognized();
+    _pizzaInCharge.push_back(std::make_pair(it->first, pizzaSize));
     _threadPool.putInQueue([this, it, pizzaSize] {
-        it->second->cookPizza(pizzaSize, _multiplier, _stock, _millisecond);
+    it->second->cookPizza(pizzaSize, _multiplier, _stock, _millisecond, _pizzaInCharge);
     });
 }
 
@@ -59,4 +60,7 @@ void plazza::Kitchen::makeStatus()
     std::cout << "Number of pizzas in work: " << getPizzasInWork() << std::endl;
     std::cout << "Number of available cooks: " << getAvailableCooks() << std::endl;
     std::cout << "Space left for pizzas: " << getSpaceLeft() << std::endl;
+    for (auto &it : _pizzaInCharge) {
+        std::cout << "Pizza being worked on: " << it.first << " " << it.second << std::endl;
+    }
 }

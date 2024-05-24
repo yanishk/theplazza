@@ -32,14 +32,9 @@ int main(int ac, const char **av)
         return 84;
     try {
         args.retrieveArgs(av);
-    } catch (std::exception &err) {
-        std::cerr << err.what() << std::endl;
-        return 84;
-    }
-    try {
         plazza::Waiter waiter;
         waiter.placeOrders(args);
-    } catch(const plazza::PlazzaMenu::ParsingPlazzaMenuFailed &err) {
+    } catch(const std::exception &err) {
         std::cerr << err.what() << std::endl;
         return 84;
     }

@@ -8,7 +8,12 @@
 #include "PizzaInfo.hpp"
 #include <algorithm>
 
-plazza::PizzaInfo::PizzaInfo(plazza::PizzaType type = Regina, plazza::PizzaSize size = S) : _type(type), _size(size)
+plazza::PizzaInfo::PizzaInfo()
+{
+    initializePizzaInfoVectors();
+}
+
+plazza::PizzaInfo::PizzaInfo(plazza::PizzaType type, plazza::PizzaSize size) : _type(type), _size(size)
 {
     initializePizzaInfoVectors();
 }
@@ -91,6 +96,7 @@ plazza::PizzaType plazza::PizzaInfo::getPizzaType()
 {
     return _type;
 }
+
 plazza::PizzaSize plazza::PizzaInfo::getPizzaSize()
 {
     return _size;
@@ -100,6 +106,7 @@ void  plazza::PizzaInfo::setPizzaType(plazza::PizzaType type)
 {
     _type = type;
 }
+
 void  plazza::PizzaInfo::setPizzaSize(plazza::PizzaSize size)
 {
     _size = size;
