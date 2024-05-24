@@ -37,11 +37,6 @@ void plazza::Process::forkKitchen(int processNum)
             _args.getMultiplier(), _plazzaMenuVector, _plazzaIngredientsVector);
         while (1) {
             msgrcv(processNum, &receiverKitchen, sizeof(receiverKitchen), 0, 0);
-            if (kitchen.needToCloseKitchen()) {
-                std::strcpy(senderKitchen.msg, "close");
-                msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
-                break;
-            }
             if (std::strcmp(receiverKitchen.msg, "status") == 0)
                 kitchen.makeStatus(_nbProcess);
             else if (kitchen.getSpaceLeft() > 0 && std::strcmp(receiverKitchen.msg, "nbCooks") != 0) {
@@ -50,6 +45,11 @@ void plazza::Process::forkKitchen(int processNum)
                 std::string pizzaTypeString = pizza.getPizzaTypeString();
                 std::string pizzaSizeString = pizza.getPizzaSizeString();
                 kitchen.makePizza(pizzaTypeString, pizzaSizeString);
+            }
+            if (kitchen.needToCloseKitchen()) {
+                std::strcpy(senderKitchen.msg, "close");
+                msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
+                break;
             }
             senderKitchen.nbCook = kitchen.getSpaceLeft();
             std::strcpy(senderKitchen.msg, "received");
