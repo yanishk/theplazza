@@ -45,11 +45,10 @@ void plazza::Process::forkKitchen(int processNum)
                 receiverKitchen.msg >> pizza;
                 std::string pizzaTypeString = pizza.getPizzaTypeString();
                 std::string pizzaSizeString = pizza.getPizzaSizeString();
-                kitchen.makePizza(pizzaTypeString, pizzaSizeString);
+                kitchen.makePizza(pizzaTypeString, pizzaSizeString, _nbProcess);
             }
             if (kitchen.needToCloseKitchen() && kitchen.getSpaceLeft() == _args.getNbrCooks() * 2) {
                 std::strcpy(senderKitchen.msg, "close");
-                std::cout << "Kitchen : " << _nbProcess << " close." << std::endl;
                 if (msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT) == -1)
                     throw plazza::Process::FunctionFailure("msgsnd");
                 break;

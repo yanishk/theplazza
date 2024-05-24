@@ -36,7 +36,7 @@ bool plazza::Kitchen::needToCloseKitchen()
     return false;
 }
 
-void plazza::Kitchen::makePizza(std::string &pizzaName, std::string &pizzaSize)
+void plazza::Kitchen::makePizza(std::string &pizzaName, std::string &pizzaSize, std::size_t nbProcess)
 {
     auto it = _availablePizzas.find(pizzaName);
 
@@ -45,8 +45,8 @@ void plazza::Kitchen::makePizza(std::string &pizzaName, std::string &pizzaSize)
     if (it == _availablePizzas.end())
         throw Kitchen::PizzaUnrecognized();
     _pizzaInCharge.push_back(std::make_pair(it->first, pizzaSize));
-    _threadPool.putInQueue([this, it, pizzaSize] {
-    it->second->cookPizza(pizzaSize, _multiplier, _stock, _millisecond, _pizzaInCharge);
+    _threadPool.putInQueue([this, it, pizzaSize, nbProcess] {
+    it->second->cookPizza(pizzaSize, _multiplier, _stock, _millisecond, _pizzaInCharge, nbProcess);
     });
 }
 

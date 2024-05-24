@@ -32,7 +32,7 @@ namespace plazza
             Kitchen(int nbrCooks, int milliseconds, float multiplier, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenu, std::vector<std::string> ingredientsList);
             ~Kitchen();
             bool needToCloseKitchen();
-            void makePizza(std::string &pizzaName, std::string &pizzaSize);
+            void makePizza(std::string &pizzaName, std::string &pizzaSize, std::size_t nbProcess);
             std::shared_ptr<plazza::Stock> getStockObject();
             int getPizzasInWork();
             int getAvailableCooks();

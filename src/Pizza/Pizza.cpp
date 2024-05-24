@@ -39,7 +39,7 @@ void plazza::Pizza::pushIngredient(std::string &ingredientName)
     _margIngredients.push_back(ingredientName);
 }
 
-void plazza::Pizza::cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond, std::vector<std::pair<std::string, std::string>> &pizzaInCharge)
+void plazza::Pizza::cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond, std::vector<std::pair<std::string, std::string>> &pizzaInCharge, std::size_t nbProcess)
 {
     std::size_t i = 0;
     int timeCooking = static_cast<float>((_cookingTime * 1000) * multiplier);
@@ -57,5 +57,5 @@ void plazza::Pizza::cookPizza(const std::string pizzaSize, float multiplier, std
         }
         i++;
     }
-    std::cout << "One " << _pizzaName << " in size " << pizzaSize << " comin' right up" << std::endl;
+    std::cout << "Kitchen " << nbProcess << ": One " << _pizzaName << " in size " << pizzaSize << " comin' right up " << std::endl;
 }
