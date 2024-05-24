@@ -29,14 +29,15 @@ void plazza::Process::forkKitchen(int processNum)
     struct my_msg receiverKitchen;
     struct my_msg senderKitchen;
 
-    memset(&senderKitchen.msg, 0, sizeof(&senderKitchen.msg));
+    std::memset(&senderKitchen.msg, 0, sizeof(&senderKitchen.msg));
     if (pid == -1)
         throw plazza::Process::FunctionFailure("fork");
     if (pid == 0) {
         plazza::Kitchen kitchen(_args.getNbrCooks(), _args.getMilliseconds(),
             _args.getMultiplier(), _plazzaMenuVector, _plazzaIngredientsVector);
         while (1) {
-            msgrcv(processNum, &receiverKitchen, sizeof(receiverKitchen), 0, 0);
+            if (msgrcv(processNum, &receiverKitchen, sizeof(receiverKitchen), 0, 0) == -1)
+                throw plazza::Process::FunctionFailure("msgrcv");
             if (std::strcmp(receiverKitchen.msg, "status") == 0)
                 kitchen.makeStatus(_nbProcess);
             else if (kitchen.getSpaceLeft() > 0 && std::strcmp(receiverKitchen.msg, "nbCooks") != 0) {
@@ -46,14 +47,16 @@ void plazza::Process::forkKitchen(int processNum)
                 std::string pizzaSizeString = pizza.getPizzaSizeString();
                 kitchen.makePizza(pizzaTypeString, pizzaSizeString);
             }
-            if (kitchen.needToCloseKitchen()) {
+            if (kitchen.needToCloseKitchen() && kitchen.getSpaceLeft() == _args.getNbrCooks() * 2) {
                 std::strcpy(senderKitchen.msg, "close");
-                msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
+                if (msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT) == -1)
+                    throw plazza::Process::FunctionFailure("msgsnd");
                 break;
             }
             senderKitchen.nbCook = kitchen.getSpaceLeft();
             std::strcpy(senderKitchen.msg, "received");
-            msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
+            if (msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT) == -1)
+                throw plazza::Process::FunctionFailure("msgsnd");
         }
     }
 }
@@ -70,8 +73,10 @@ void plazza::Process::createNewProcess(struct my_msg &senderReception, struct my
     forkKitchen(kitchenReceiverID);
     _processVector.push_back(kitchenReceiverID);
     std::strcpy(senderReception.msg, pizzaInfoString.c_str());
-    msgsnd(kitchenReceiverID, &senderReception, sizeof(senderReception), IPC_NOWAIT);
-    msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+    if (msgsnd(kitchenReceiverID, &senderReception, sizeof(senderReception), IPC_NOWAIT) == -1)
+        throw plazza::Process::FunctionFailure("msgsnd");
+    if (msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0) == -1)
+        throw plazza::Process::FunctionFailure("msgrcv");
 }
 
 void plazza::Process::getStatus(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString)
@@ -79,10 +84,13 @@ void plazza::Process::getStatus(struct my_msg &senderReception, struct my_msg &r
     for (std::size_t i = 0; i < _processVector.size(); i++) {
         std::strcpy(senderReception.msg, pizzaInfoString.c_str());
         senderReception.nbCook = 0;
-        msgsnd(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT);
-        msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+        if (msgsnd(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT) == -1)
+            throw plazza::Process::FunctionFailure("msgsnd");
+        if (msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0) == -1)
+            throw plazza::Process::FunctionFailure("msgrcv");
         if (std::strcmp(receiverReception.msg, "close") == 0) {
-            msgctl(_processVector.at(i),IPC_RMID,NULL);
+            if (msgctl(_processVector.at(i),IPC_RMID,NULL) == -1)
+                throw plazza::Process::FunctionFailure("msgctl");
             _processVector.erase(_processVector.begin() + i);
             i--;
         }
@@ -95,13 +103,16 @@ void plazza::Process::sendPizza(struct my_msg &senderReception, struct my_msg &r
 
     for (std::size_t i = 0; i < _processVector.size(); i++) {
         std::strcpy(senderReception.msg, "nbCooks");
-        msgsnd(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT);
-        msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+        if (msgsnd(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT) == -1)
+            throw plazza::Process::FunctionFailure("msgsnd");
+        if (msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0) == -1)
+            throw plazza::Process::FunctionFailure("msgrcv");
         if (receiverReception.nbCook > mostAvailKitchen.second) {
             mostAvailKitchen.first = i;
             mostAvailKitchen.second = receiverReception.nbCook;
         } else if (std::strcmp(receiverReception.msg, "close") == 0) {
-            msgctl(_processVector.at(i),IPC_RMID,NULL);
+            if (msgctl(_processVector.at(i),IPC_RMID,NULL) == -1)
+                throw plazza::Process::FunctionFailure("msgctl");
             _processVector.erase(_processVector.begin() + i);
             i--;
         }
@@ -110,8 +121,10 @@ void plazza::Process::sendPizza(struct my_msg &senderReception, struct my_msg &r
         createNewProcess(senderReception, receiverReception, pizzaInfoString);
     else {
         std::strcpy(senderReception.msg, pizzaInfoString.c_str());
-        msgsnd(_processVector.at(mostAvailKitchen.first), &senderReception, sizeof(senderReception), IPC_NOWAIT);
-        msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+        if (msgsnd(_processVector.at(mostAvailKitchen.first), &senderReception, sizeof(senderReception), IPC_NOWAIT) == -1)
+            throw plazza::Process::FunctionFailure("msgsnd");
+        if (msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0) == -1)
+            throw plazza::Process::FunctionFailure("msgrcv");
     }
 }
 
