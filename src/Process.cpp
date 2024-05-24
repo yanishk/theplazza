@@ -37,9 +37,14 @@ void plazza::Process::forkKitchen(int processNum)
             _args.getMultiplier(), _plazzaMenuVector, _plazzaIngredientsVector);
         while (1) {
             msgrcv(processNum, &receiverKitchen, sizeof(receiverKitchen), 0, 0);
+            if (kitchen.needToCloseKitchen()) {
+                msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
+                msgctl(processNum,IPC_RMID,NULL);
+                break;
+            }
             if (std::strcmp(receiverKitchen.msg, "status") == 0)
                 kitchen.makeStatus();
-            else if (kitchen.getSpaceLeft() > 0  && std::strcmp(receiverKitchen.msg, "nbCooks") != 0) {
+            else if (kitchen.getSpaceLeft() > 0 && std::strcmp(receiverKitchen.msg, "nbCooks") != 0) {
                 plazza::PizzaInfo pizza;
                 receiverKitchen.msg >> pizza;
                 std::string pizzaTypeString = pizza.getPizzaTypeString();
@@ -76,6 +81,11 @@ void plazza::Process::getStatus(struct my_msg &senderReception, struct my_msg &r
         senderReception.nbCook = 0;
         msgsnd(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT);
         msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+        if (std::strcmp(receiverReception.msg, "close") == 0) {
+            msgctl(_processVector.at(i),IPC_RMID,NULL);
+            _processVector.erase(_processVector.begin() + i);
+            i--;
+        }
     }
 }
 
@@ -90,6 +100,10 @@ void plazza::Process::sendPizza(struct my_msg &senderReception, struct my_msg &r
         if (receiverReception.nbCook > mostAvailKitchen.second) {
             mostAvailKitchen.first = i;
             mostAvailKitchen.second = receiverReception.nbCook;
+        } else if (std::strcmp(receiverReception.msg, "close") == 0) {
+            msgctl(_processVector.at(i),IPC_RMID,NULL);
+            _processVector.erase(_processVector.begin() + i);
+            i--;
         }
     }
     if (mostAvailKitchen.second <= 0)

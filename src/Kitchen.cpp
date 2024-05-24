@@ -9,7 +9,10 @@
 #include "Process.hpp"
 #include <iostream>
 
-plazza::Kitchen::Kitchen(int nbrCooks, int milliseconds, float multiplier, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenu, std::vector<std::string> ingredientsList) : _threadPool(nbrCooks), _millisecond(milliseconds),_stock(std::make_shared<plazza::Stock>(ingredientsList)), _multiplier(multiplier), _stockThread(_stock->refillStock, _stock, milliseconds)
+plazza::Kitchen::Kitchen(int nbrCooks, int milliseconds, float multiplier, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenu, std::vector<std::string> ingredientsList) :
+    _threadPool(nbrCooks), _millisecond(milliseconds), _stock(std::make_shared<plazza::Stock>(ingredientsList)),
+    _multiplier(multiplier), _stockThread(_stock->refillStock, _stock, milliseconds),
+    _clockT0(std::chrono::steady_clock::now()), _clockT1(std::chrono::steady_clock::now())
 {
     for (auto &pizza : plazzaMenu)
         _availablePizzas[pizza->getPizzaName()] = pizza;
@@ -20,10 +23,25 @@ plazza::Kitchen::~Kitchen()
     _stockThread.join();
 }
 
+bool plazza::Kitchen::needToCloseKitchen()
+{
+    unsigned int msTimer = 5000;
+
+    _clockT1 = std::chrono::steady_clock::now();
+    auto timeElapsed = std::chrono::duration_cast
+        <std::chrono::milliseconds>(_clockT1 - _clockT0);
+
+    if (timeElapsed.count() > msTimer)
+        return true;
+    return false;
+}
+
 void plazza::Kitchen::makePizza(std::string &pizzaName, std::string &pizzaSize)
 {
     auto it = _availablePizzas.find(pizzaName);
 
+    _clockT0 = std::chrono::steady_clock::now();
+    _clockT1 = std::chrono::steady_clock::now();
     if (it == _availablePizzas.end())
         throw Kitchen::PizzaUnrecognized();
     _pizzaInCharge.push_back(std::make_pair(it->first, pizzaSize));
