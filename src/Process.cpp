@@ -107,14 +107,14 @@ void plazza::Process::sendPizza(struct my_msg &senderReception, struct my_msg &r
             throw plazza::Process::FunctionFailure("msgsnd");
         if (msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0) == -1)
             throw plazza::Process::FunctionFailure("msgrcv");
-        if (receiverReception.nbCook > mostAvailKitchen.second) {
-            mostAvailKitchen.first = i;
-            mostAvailKitchen.second = receiverReception.nbCook;
-        } else if (std::strcmp(receiverReception.msg, "close") == 0) {
+        if (std::strcmp(receiverReception.msg, "close") == 0) {
             if (msgctl(_processVector.at(i),IPC_RMID,NULL) == -1)
                 throw plazza::Process::FunctionFailure("msgctl");
             _processVector.erase(_processVector.begin() + i);
             i--;
+        } else if (receiverReception.nbCook > mostAvailKitchen.second) {
+            mostAvailKitchen.first = i;
+            mostAvailKitchen.second = receiverReception.nbCook;
         }
     }
     if (mostAvailKitchen.second <= 0)
