@@ -38,8 +38,8 @@ void plazza::Process::forkKitchen(int processNum)
         while (1) {
             msgrcv(processNum, &receiverKitchen, sizeof(receiverKitchen), 0, 0);
             if (kitchen.needToCloseKitchen()) {
+                std::strcpy(senderKitchen.msg, "close");
                 msgsnd(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
-                msgctl(processNum,IPC_RMID,NULL);
                 break;
             }
             if (std::strcmp(receiverKitchen.msg, "status") == 0)
