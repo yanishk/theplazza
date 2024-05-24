@@ -70,15 +70,21 @@ int plazza::Kitchen::getSpaceLeft()
     return _threadPool.getSpaceLeft();
 }
 
-void plazza::Kitchen::makeStatus()
+void plazza::Kitchen::makeStatus(std::size_t nbProcess)
 {
+    std::cout << "Kitchen " << nbProcess << " {" <<  std::endl;
     std::map<std::string, std::size_t> map = getStockObject()->getStock();
+    std::cout << "\tIngredients {" << std::endl;
     for (auto it = map.begin(); it != map.end(); it++)
-        std::cout << it->first << ": " << it->second << std::endl;
-    std::cout << "Number of pizzas in work: " << getPizzasInWork() << std::endl;
-    std::cout << "Number of available cooks: " << getAvailableCooks() << std::endl;
-    std::cout << "Space left for pizzas: " << getSpaceLeft() << std::endl;
+        std::cout << "\t\t" << it->first << ": " << it->second << std::endl;
+    std::cout << "\t}" << std::endl;
+    std::cout << "\tNumber of pizzas in work: " << getPizzasInWork() << std::endl;
+    std::cout << "\tNumber of available cooks: " << getAvailableCooks() << std::endl;
+    std::cout << "\tSpace left for pizzas: " << getSpaceLeft() << std::endl;
+    std::cout << "\tPizzas being worked on {" << std::endl;
     for (auto &it : _pizzaInCharge) {
-        std::cout << "Pizza being worked on: " << it.first << " " << it.second << std::endl;
+        std::cout << "\t\t" << it.first << " " << it.second << std::endl;
     }
+    std::cout << "\t}" << std::endl;
+    std::cout << "}" << std::endl << std::endl;
 }

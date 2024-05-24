@@ -37,7 +37,7 @@ namespace plazza
             int getPizzasInWork();
             int getAvailableCooks();
             int getSpaceLeft();
-            void makeStatus();
+            void makeStatus(std::size_t nbProcess);
 
         private:
             float _multiplier;

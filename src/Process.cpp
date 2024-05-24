@@ -43,7 +43,7 @@ void plazza::Process::forkKitchen(int processNum)
                 break;
             }
             if (std::strcmp(receiverKitchen.msg, "status") == 0)
-                kitchen.makeStatus();
+                kitchen.makeStatus(_nbProcess);
             else if (kitchen.getSpaceLeft() > 0 && std::strcmp(receiverKitchen.msg, "nbCooks") != 0) {
                 plazza::PizzaInfo pizza;
                 receiverKitchen.msg >> pizza;
