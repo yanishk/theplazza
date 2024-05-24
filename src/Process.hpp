@@ -32,12 +32,20 @@ namespace plazza
                     FunctionFailure(const std::string& function):
                     plazza::Error(function + ": failed") {}
             };
+            class CFunction {
+                public:
+                    static std::size_t forkFunc();
+                    static void msgrcvFunc(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg);
+                    static void msgsndFunc(int msqid, const void *msgp, size_t msgsz, int msgflg);
+                    static void msgctlFunc(int msqid, int cmd, msqid_ds *buf);
+                    static int msggetFunc(key_t key, int msgflg);
+                    static key_t ftokFunc(const char *pathname, int proj_id);
+            };
             Process(plazza::Arguments args, std::vector<std::shared_ptr<plazza::Pizza>> plazzaMenuVector, std::vector<std::string> plazzaIngredientsVector);
             ~Process() = default;
             void IPC(std::string &pizzaInfoString);
 
         private:
-            pid_t forkFunc();
             void forkKitchen(int processNum);
             void createNewProcess(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString);
             void getStatus(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString);

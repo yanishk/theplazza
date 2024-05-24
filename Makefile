@@ -17,6 +17,7 @@ SRC		=	main.cpp				\
 			src/PlazzaMenu.cpp 		\
 			src/Pizza/Pizza.cpp 	\
 			src/Pizza/PizzaInfo.cpp \
+			src/ProcessFunc.cpp		\
 
 OBJ		=	$(SRC:.cpp=.o)
 
