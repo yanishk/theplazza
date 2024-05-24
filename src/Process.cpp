@@ -53,7 +53,7 @@ void plazza::Process::forkKitchen(int processNum)
     }
 }
 
-void plazza::Process::createNewProcess(struct my_msg senderReception, struct my_msg receiverReception, std::string pizzaInfoString)
+void plazza::Process::createNewProcess(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString)
 {
     int kitchenReceiverID = 0;
 
@@ -69,36 +69,46 @@ void plazza::Process::createNewProcess(struct my_msg senderReception, struct my_
     msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
 }
 
-void plazza::Process::IPC(std::string pizzaInfoString)
+void plazza::Process::getStatus(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString)
+{
+    for (std::size_t i = 0; i < _processVector.size(); i++) {
+        std::strcpy(senderReception.msg, pizzaInfoString.c_str());
+        senderReception.nbCook = 0;
+        msgsnd(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT);
+        msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+    }
+}
+
+void plazza::Process::sendPizza(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString)
+{
+    std::pair<std::size_t, std::size_t> mostAvailKitchen{0, 0};
+
+    for (std::size_t i = 0; i < _processVector.size(); i++) {
+        std::strcpy(senderReception.msg, "nbCooks");
+        msgsnd(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT);
+        msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+        if (receiverReception.nbCook > mostAvailKitchen.second) {
+            mostAvailKitchen.first = i;
+            mostAvailKitchen.second = receiverReception.nbCook;
+        }
+    }
+    if (mostAvailKitchen.second <= 0)
+        createNewProcess(senderReception, receiverReception, pizzaInfoString);
+    else {
+        std::strcpy(senderReception.msg, pizzaInfoString.c_str());
+        msgsnd(_processVector.at(mostAvailKitchen.first), &senderReception, sizeof(senderReception), IPC_NOWAIT);
+        msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+    }
+}
+
+void plazza::Process::IPC(std::string &pizzaInfoString)
 {
     struct my_msg senderReception;
     struct my_msg receiverReception;
-    bool createProcess = true;
-    std::pair<std::size_t, std::size_t> mostAvailKitchen{0, 0};
 
     if (pizzaInfoString != "status") {
-        for (std::size_t i = 0; i < _processVector.size(); i++) {
-            std::strcpy(senderReception.msg, "nbCooks");
-            msgsnd(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT);
-            msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
-            if (receiverReception.nbCook > mostAvailKitchen.second) {
-                mostAvailKitchen.first = i;
-                mostAvailKitchen.second = receiverReception.nbCook;
-            }
-        }
-        if (mostAvailKitchen.second <= 0)
-            createNewProcess(senderReception, receiverReception, pizzaInfoString);
-        else {
-            std::strcpy(senderReception.msg, pizzaInfoString.c_str());
-            msgsnd(_processVector.at(mostAvailKitchen.first), &senderReception, sizeof(senderReception), IPC_NOWAIT);
-            msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
-        }
+        sendPizza(senderReception, receiverReception, pizzaInfoString);
     } else {
-        for (std::size_t i = 0; i < _processVector.size(); i++) {
-            std::strcpy(senderReception.msg, pizzaInfoString.c_str());
-            senderReception.nbCook = 0;
-            msgsnd(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT);
-            msgrcv(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
-        }
+        getStatus(senderReception, receiverReception, pizzaInfoString);
     }
 }
