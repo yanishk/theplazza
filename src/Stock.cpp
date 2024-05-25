@@ -26,7 +26,7 @@ void plazza::Stock::refillStock(std::shared_ptr<plazza::Stock> stock, int time)
     }
 }
 
-void plazza::Stock::takeFromStock(std::string ingredient, int millisecond)
+void plazza::Stock::takeFromStock(std::string ingredient)
 {
     auto it = _stockIngredients.find(ingredient);
     if (it != _stockIngredients.end()) {

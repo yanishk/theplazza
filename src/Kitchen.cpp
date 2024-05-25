@@ -30,7 +30,6 @@ bool plazza::Kitchen::needToCloseKitchen()
     _clockT1 = std::chrono::steady_clock::now();
     auto timeElapsed = std::chrono::duration_cast
         <std::chrono::milliseconds>(_clockT1 - _clockT0);
-
     if (timeElapsed.count() > msTimer)
         return true;
     return false;
@@ -41,12 +40,11 @@ void plazza::Kitchen::makePizza(std::string &pizzaName, std::string &pizzaSize, 
     auto it = _availablePizzas.find(pizzaName);
 
     _clockT0 = std::chrono::steady_clock::now();
-    _clockT1 = std::chrono::steady_clock::now();
     if (it == _availablePizzas.end())
         throw Kitchen::PizzaUnrecognized();
     _pizzaInCharge.push_back(std::make_pair(it->first, pizzaSize));
     _threadPool.putInQueue([this, it, pizzaSize, nbProcess] {
-    it->second->cookPizza(pizzaSize, _multiplier, _stock, _millisecond, _pizzaInCharge, nbProcess);
+    it->second->cookPizza(pizzaSize, _multiplier, _stock, _pizzaInCharge, nbProcess, _clockT0);
     });
 }
 

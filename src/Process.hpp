@@ -34,7 +34,7 @@ namespace plazza
             };
             class CFunction {
                 public:
-                    static std::size_t forkFunc();
+                    static pid_t forkFunc();
                     static void msgrcvFunc(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg);
                     static void msgsndFunc(int msqid, const void *msgp, size_t msgsz, int msgflg);
                     static void msgctlFunc(int msqid, int cmd, msqid_ds *buf);
@@ -51,11 +51,11 @@ namespace plazza
             void getStatus(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString);
             void sendPizza(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString);
             int _msgrid;
+            std::size_t _nbProcess;
+            plazza::Arguments _args;
             std::vector<std::shared_ptr<plazza::Pizza>>  _plazzaMenuVector;
             std::vector<std::string> _plazzaIngredientsVector;
-            plazza::Arguments _args;
             std::vector<int> _processVector;
-            std::size_t _nbProcess;
     };
 }
 

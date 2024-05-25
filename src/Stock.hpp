@@ -25,7 +25,7 @@ namespace plazza
             ~Stock() = default;
 
             static void refillStock(std::shared_ptr<plazza::Stock> stock, int time);
-            void takeFromStock(std::string, int millisecond);
+            void takeFromStock(std::string);
             std::map<std::string, std::size_t> getStock();
 
         protected:

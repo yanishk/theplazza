@@ -40,15 +40,15 @@ namespace plazza
             void makeStatus(std::size_t nbProcess);
 
         private:
-            float _multiplier;
             plazza::ThreadPool _threadPool;
-            std::shared_ptr<plazza::Stock> _stock;
-            std::unordered_map<std::string, std::shared_ptr<plazza::Pizza>> _availablePizzas;
-            std::thread _stockThread;
             int _millisecond;
-            std::vector<std::pair<std::string, std::string>> _pizzaInCharge;
+            std::shared_ptr<plazza::Stock> _stock;
+            float _multiplier;
+            std::thread _stockThread;
             std::chrono::_V2::steady_clock::time_point _clockT0;
             std::chrono::_V2::steady_clock::time_point _clockT1;
+            std::unordered_map<std::string, std::shared_ptr<plazza::Pizza>> _availablePizzas;
+            std::vector<std::pair<std::string, std::string>> _pizzaInCharge;
     };
 }
 

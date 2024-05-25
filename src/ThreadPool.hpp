@@ -35,12 +35,12 @@ namespace plazza
         private:
             std::queue<std::function<void()>> _work;
             std::vector<std::thread> _threads;
-            std::size_t _nbThreads;
             std::mutex _mutexPool;
             std::condition_variable _condVar;
+            std::size_t _nbThreads;
+            bool _done;
             std::size_t _countThreadWorking;
             std::size_t _countFunctionsInQueue;
-            bool _done;
 
     };
 }

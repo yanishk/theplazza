@@ -23,7 +23,7 @@ OBJ		=	$(SRC:.cpp=.o)
 
 NAME	=	plazza
 
-CPPFLAGS	=	-std=c++20 -iquote ./src -iquote ./src/Pizza -iquote ./include
+CPPFLAGS	=	-std=c++20 -Wall -Wextra -iquote ./src -iquote ./src/Pizza -iquote ./include
 
 all:	$(NAME)
 

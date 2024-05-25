@@ -22,12 +22,17 @@ void plazza::Process::forkKitchen(int processNum)
     struct my_msg receiverKitchen;
     struct my_msg senderKitchen;
 
-    std::memset(&senderKitchen.msg, 0, sizeof(&senderKitchen.msg));
+    std::memset(&senderKitchen.msg, 0, sizeof(senderKitchen.msg));
     if (pid == 0) {
         plazza::Kitchen kitchen(_args.getNbrCooks(), _args.getMilliseconds(),
             _args.getMultiplier(), _plazzaMenuVector, _plazzaIngredientsVector);
         while (1) {
             CFunction::msgrcvFunc(processNum, &receiverKitchen, sizeof(receiverKitchen), 0, 0);
+            if (kitchen.needToCloseKitchen()) {
+                std::strcpy(senderKitchen.msg, "close");
+                CFunction::msgsndFunc(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
+                break;
+            }
             if (std::strcmp(receiverKitchen.msg, "status") == 0)
                 kitchen.makeStatus(_nbProcess);
             else if (kitchen.getSpaceLeft() > 0 && std::strcmp(receiverKitchen.msg, "nbCooks") != 0) {
@@ -36,11 +41,6 @@ void plazza::Process::forkKitchen(int processNum)
                 std::string pizzaTypeString = pizza.getPizzaTypeString();
                 std::string pizzaSizeString = pizza.getPizzaSizeString();
                 kitchen.makePizza(pizzaTypeString, pizzaSizeString, _nbProcess);
-            }
-            if (kitchen.needToCloseKitchen() && kitchen.getSpaceLeft() == _args.getNbrCooks() * 2) {
-                std::strcpy(senderKitchen.msg, "close");
-                CFunction::msgsndFunc(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
-                break;
             }
             senderKitchen.nbCook = kitchen.getSpaceLeft();
             std::strcpy(senderKitchen.msg, "received");
@@ -80,7 +80,7 @@ void plazza::Process::getStatus(struct my_msg &senderReception, struct my_msg &r
 
 void plazza::Process::sendPizza(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString)
 {
-    std::pair<std::size_t, std::size_t> mostAvailKitchen{0, 0};
+    std::pair<std::size_t, int> mostAvailKitchen{0, 0};
 
     for (std::size_t i = 0; i < _processVector.size(); i++) {
         std::strcpy(senderReception.msg, "nbCooks");

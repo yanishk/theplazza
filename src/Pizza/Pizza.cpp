@@ -39,13 +39,14 @@ void plazza::Pizza::pushIngredient(std::string &ingredientName)
     _margIngredients.push_back(ingredientName);
 }
 
-void plazza::Pizza::cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock, int millisecond, std::vector<std::pair<std::string, std::string>> &pizzaInCharge, std::size_t nbProcess)
+void plazza::Pizza::cookPizza(const std::string pizzaSize, float multiplier, std::shared_ptr<plazza::Stock> stock,
+    std::vector<std::pair<std::string, std::string>> &pizzaInCharge, std::size_t nbProcess, std::chrono::_V2::steady_clock::time_point &clockT0)
 {
     std::size_t i = 0;
     int timeCooking = static_cast<float>((_cookingTime * 1000) * multiplier);
 
     for (auto &it: _margIngredients)
-        stock->takeFromStock(it, millisecond);
+        stock->takeFromStock(it);
     std::this_thread::sleep_for(std::chrono::milliseconds(timeCooking));
     for (auto &it : pizzaInCharge) {
         {
@@ -58,4 +59,5 @@ void plazza::Pizza::cookPizza(const std::string pizzaSize, float multiplier, std
         i++;
     }
     std::cout << "Kitchen " << nbProcess << ": One " << _pizzaName << " in size " << pizzaSize << " comin' right up " << std::endl;
+    clockT0 = std::chrono::steady_clock::now();
 }

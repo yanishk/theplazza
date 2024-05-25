@@ -7,9 +7,9 @@
 
 #include "Process.hpp"
 
-std::size_t plazza::Process::CFunction::forkFunc()
+pid_t plazza::Process::CFunction::forkFunc()
 {
-    std::size_t pid = fork();
+    pid_t pid = fork();
     if (pid == -1)
         throw plazza::Process::FunctionFailure("fork");
     return pid;

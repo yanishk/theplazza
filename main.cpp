@@ -12,7 +12,11 @@
 
 int getHelp(int ac, const char **av)
 {
-    if (ac == 2 && av[1] == "--help") {
+    std::string firstArg;
+
+    if (ac == 2)
+        firstArg = av[1];
+    if (ac == 2 && firstArg == "--help") {
         std::cerr << "Usage: ./plazza <multiplier> <nbr_cooks> <milliseconds>" << std::endl;
         return 0;
     }
