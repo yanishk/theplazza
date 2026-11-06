@@ -27,10 +27,10 @@ void plazza::Process::forkKitchen(int processNum)
         plazza::Kitchen kitchen(_args.getNbrCooks(), _args.getMilliseconds(),
             _args.getMultiplier(), _plazzaMenuVector, _plazzaIngredientsVector);
         while (1) {
-            CFunction::msgrcvFunc(processNum, &receiverKitchen, sizeof(receiverKitchen), 0, 0);
+            CFunction::msgrcvFunc(processNum, &receiverKitchen, MY_MSG_TEXT_SIZE, 0, 0);
             if (kitchen.needToCloseKitchen()) {
                 std::strcpy(senderKitchen.msg, "close");
-                CFunction::msgsndFunc(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
+                CFunction::msgsndFunc(_msgrid, &senderKitchen, MY_MSG_TEXT_SIZE, IPC_NOWAIT);
                 break;
             }
             if (std::strcmp(receiverKitchen.msg, "status") == 0)
@@ -44,7 +44,7 @@ void plazza::Process::forkKitchen(int processNum)
             }
             senderKitchen.nbCook = kitchen.getSpaceLeft();
             std::strcpy(senderKitchen.msg, "received");
-            CFunction::msgsndFunc(_msgrid, &senderKitchen, sizeof(senderKitchen), IPC_NOWAIT);
+            CFunction::msgsndFunc(_msgrid, &senderKitchen, MY_MSG_TEXT_SIZE, IPC_NOWAIT);
         }
     }
 }
@@ -59,8 +59,8 @@ void plazza::Process::createNewProcess(struct my_msg &senderReception, struct my
     forkKitchen(kitchenReceiverID);
     _processVector.push_back(kitchenReceiverID);
     std::strcpy(senderReception.msg, pizzaInfoString.c_str());
-    CFunction::msgsndFunc(kitchenReceiverID, &senderReception, sizeof(senderReception), IPC_NOWAIT);
-    CFunction::msgrcvFunc(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+    CFunction::msgsndFunc(kitchenReceiverID, &senderReception, MY_MSG_TEXT_SIZE, IPC_NOWAIT);
+    CFunction::msgrcvFunc(_msgrid, &receiverReception, MY_MSG_TEXT_SIZE, 0, 0);
 }
 
 void plazza::Process::getStatus(struct my_msg &senderReception, struct my_msg &receiverReception, std::string &pizzaInfoString)
@@ -68,8 +68,8 @@ void plazza::Process::getStatus(struct my_msg &senderReception, struct my_msg &r
     for (std::size_t i = 0; i < _processVector.size(); i++) {
         std::strcpy(senderReception.msg, pizzaInfoString.c_str());
         senderReception.nbCook = 0;
-        CFunction::msgsndFunc(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT);
-        CFunction::msgrcvFunc(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+        CFunction::msgsndFunc(_processVector.at(i), &senderReception, MY_MSG_TEXT_SIZE, IPC_NOWAIT);
+        CFunction::msgrcvFunc(_msgrid, &receiverReception, MY_MSG_TEXT_SIZE, 0, 0);
         if (std::strcmp(receiverReception.msg, "close") == 0) {
             CFunction::msgctlFunc(_processVector.at(i),IPC_RMID,NULL);
             _processVector.erase(_processVector.begin() + i);
@@ -84,8 +84,8 @@ void plazza::Process::sendPizza(struct my_msg &senderReception, struct my_msg &r
 
     for (std::size_t i = 0; i < _processVector.size(); i++) {
         std::strcpy(senderReception.msg, "nbCooks");
-        CFunction::msgsndFunc(_processVector.at(i), &senderReception, sizeof(senderReception), IPC_NOWAIT);
-        CFunction::msgrcvFunc(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+        CFunction::msgsndFunc(_processVector.at(i), &senderReception, MY_MSG_TEXT_SIZE, IPC_NOWAIT);
+        CFunction::msgrcvFunc(_msgrid, &receiverReception, MY_MSG_TEXT_SIZE, 0, 0);
         if (std::strcmp(receiverReception.msg, "close") == 0) {
             CFunction::msgctlFunc(_processVector.at(i),IPC_RMID,NULL);
             _processVector.erase(_processVector.begin() + i);
@@ -99,8 +99,8 @@ void plazza::Process::sendPizza(struct my_msg &senderReception, struct my_msg &r
         createNewProcess(senderReception, receiverReception, pizzaInfoString);
     else {
         std::strcpy(senderReception.msg, pizzaInfoString.c_str());
-        CFunction::msgsndFunc(_processVector.at(mostAvailKitchen.first), &senderReception, sizeof(senderReception), IPC_NOWAIT);
-        CFunction::msgrcvFunc(_msgrid, &receiverReception, sizeof(receiverReception), 0, 0);
+        CFunction::msgsndFunc(_processVector.at(mostAvailKitchen.first), &senderReception, MY_MSG_TEXT_SIZE, IPC_NOWAIT);
+        CFunction::msgrcvFunc(_msgrid, &receiverReception, MY_MSG_TEXT_SIZE, 0, 0);
     }
 }
 
