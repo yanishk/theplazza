@@ -11,6 +11,8 @@
 ![Make](https://img.shields.io/badge/build-Make-A42E2B?logo=gnu&logoColor=white)
 ![Linux](https://img.shields.io/badge/platform-Linux-lightgrey)
 
+<img src="doc/demo.gif" alt="The reception taking an order, spreading the pizzas over two kitchens and printing their status" width="760">
+
 [Quick start](#quick-start) · [How it works](#how-it-works) · [Team](#team)
 
 </div>
