@@ -1,0 +1,15 @@
+# Build artifacts
+*.o
+*.d
+/plazza
+
+# Logs and debug output
+*.log
+vgcore.*
+core
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store

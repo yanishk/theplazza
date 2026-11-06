@@ -21,6 +21,8 @@ struct my_msg {
     char msg[100];
 };
 
+constexpr std::size_t MY_MSG_TEXT_SIZE = sizeof(struct my_msg) - sizeof(long);
+
 namespace plazza
 {
     class Process
